@@ -1,4 +1,4 @@
-'use client'; // v3.0 - final cache bust
+'use client'; // v2 - TECH HEALTH COMPLETELY REMOVED bust
 
 import { useEffect, useState, useMemo } from 'react';
 import { Card } from '@tremor/react';
@@ -686,7 +686,7 @@ export default function Dashboard() {
 
         <header id="overview" className="mb-12 text-center">
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            AGNTCY Directory OSS Pulse - FINAL CACHE BUST
+            AGNTCY Directory OSS Pulse - TECH HEALTH ELIMINATED
           </h1>
           <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
             Real-time insights into project health, community engagement, and technical excellence
