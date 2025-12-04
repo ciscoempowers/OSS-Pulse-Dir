@@ -506,10 +506,8 @@ export default function Dashboard() {
         setDevExperienceMetrics({
           issueResolutionTime: { averageHours: 0, trend: 'stable' },
           documentationEngagement: { views: 0, uniqueReaders: 0 },
-          prMergeRate: 0,
-          codeChurnRate: 0,
-          bugFixTime: { averageHours: 0, trend: 'stable' },
-          onboardingExperience: { averageTimeToFirstPR: 0, documentationCompleteness: 0 }
+          apiResponseTimes: { averageMs: 0, p95Ms: 0 },
+          codeReviewTime: { averageHours: 0, medianHours: 0 }
         });
       }
       
