@@ -514,6 +514,17 @@ export default function Dashboard() {
       setLoading(false);
     };
 
+    // Test API endpoint directly
+    fetch('/api/test-token')
+      .then(res => res.json())
+      .then(data => {
+        console.log('=== TOKEN TEST RESULT ===');
+        console.log('Token test response:', data);
+      })
+      .catch(err => {
+        console.error('Token test error:', err);
+      });
+    
     fetchData();
   }, []);
 
