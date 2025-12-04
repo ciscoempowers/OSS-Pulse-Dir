@@ -236,6 +236,7 @@ export default function Dashboard() {
   const [repoStats, setRepoStats] = useState({ stars: 0, forks: 0, name: '', openIssues: 0, downloads: 0, contributors: 0, newContributorsThisMonth: 0, starsThisMonth: 0, forksThisMonth: 0, downloadsThisMonth: 0 });
   
   // Agent system state
+  const [agents, setAgents] = useState<Agent[]>([
     {
       id: 'engagement-1',
       name: 'Engagement Agent',
@@ -558,8 +559,10 @@ export default function Dashboard() {
               Meetings and Discussions
             </a>
             <a href="#agents" className="block text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              Agents
             </a>
             <a href="#intelligence" className="block text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              Collective Intelligence
             </a>
           </div>
         </div>
@@ -1356,8 +1359,6 @@ export default function Dashboard() {
 
       </div>
 
-      
-      
       <AIStrategicPartner />
       </div>
     </div>
