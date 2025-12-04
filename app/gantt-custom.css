@@ -1,0 +1,63 @@
+/* Force Gantt chart to show visual timeline instead of table */
+.gantt-task-react {
+  overflow-x: auto !important;
+}
+
+.gantt-task-react .grid-container {
+  display: block !important;
+}
+
+.gantt-task-react .timeline-container {
+  display: block !important;
+  min-height: 400px !important;
+}
+
+.gantt-task-react .task-list-container {
+  display: block !important;
+}
+
+.gantt-task-react .task-list {
+  display: block !important;
+}
+
+.gantt-task-react .task-list-item {
+  display: flex !important;
+  align-items: center !important;
+  height: 40px !important;
+}
+
+.gantt-task-react .gantt-horizontal-container {
+  display: block !important;
+}
+
+.gantt-task-react .gantt-vertical-container {
+  display: block !important;
+}
+
+.gantt-task-react .gantt-vertical-container .gantt-task {
+  display: block !important;
+  position: absolute !important;
+  height: 30px !important;
+  border-radius: 4px !important;
+}
+
+/* Ensure bars are visible */
+.gantt-task-react .gantt-vertical-container .gantt-task-bar {
+  display: block !important;
+  background: #3b82f6 !important;
+  border-radius: 4px !important;
+  height: 30px !important;
+}
+
+/* Hide table-like elements */
+.gantt-task-react table {
+  display: none !important;
+}
+
+.gantt-task-react tr {
+  display: none !important;
+}
+
+.gantt-task-react td {
+  display: none !important;
+}
