@@ -8,7 +8,7 @@ import 'gantt-task-react/dist/index.css';
 import type { Milestone as GitHubMilestone, Discussion as GitHubDiscussion } from './lib/github';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import AIStrategicPartner from './components/AIStrategicPartner';
-import { Activity, Play, Square, RotateCcw, Users, GitBranch, Brain, Loader2, CheckCircle } from 'lucide-react';
+import { Activity, Play, Square, RotateCcw, Users, GitBranch, Brain, Loader2, CheckCircle, Clock, User, Bot, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 
 // Agent interfaces
 interface Agent {
@@ -230,9 +230,40 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [repoStats, setRepoStats] = useState({ stars: 0, forks: 0, name: '', openIssues: 0, downloads: 0, contributors: 0, newContributorsThisMonth: 0, starsThisMonth: 0, forksThisMonth: 0, downloadsThisMonth: 0 });
-  
+
+  // Workflow step interfaces
+  interface WorkflowStep {
+    id: string;
+    name: string;
+    description: string;
+    type: 'automated' | 'human_approval' | 'data_collection' | 'notification';
+    status: 'pending' | 'running' | 'completed' | 'failed' | 'waiting_approval';
+    startTime?: Date;
+    endTime?: Date;
+    executionTime?: number;
+    simulatedData?: any;
+    approvalOptions?: Array<{ id: string; label: string; description: string; action: string }>;
+  }
+
+  interface WorkflowExecution {
+    id: string;
+    agentId: string;
+    agentName: string;
+    status: 'idle' | 'running' | 'paused' | 'completed';
+    currentStepIndex: number;
+    steps: WorkflowStep[];
+    startTime?: Date;
+    endTime?: Date;
+    contributor: {
+      username: string;
+      experience: string;
+      interests: string[];
+    };
+  }
+
   // Agent simulation state
   const [isSimulationRunning, setIsSimulationRunning] = useState(false);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<WorkflowExecution | null>(null);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
   const [activeWorkflows, setActiveWorkflows] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
@@ -298,34 +329,369 @@ export default function Dashboard() {
   };
 
   const startAgentSimulation = (agentId: string) => {
+    const agent = agents.find(a => a.id === agentId);
+    if (!agent) return;
+
+    // Create workflow execution
+    const workflowExecution: WorkflowExecution = {
+      id: `workflow-${Date.now()}`,
+      agentId,
+      agentName: agent.name,
+      status: 'running',
+      currentStepIndex: 0,
+      startTime: new Date(),
+      contributor: {
+        username: 'johndoe',
+        experience: 'intermediate',
+        interests: ['frontend', 'documentation']
+      },
+      steps: getWorkflowSteps(agentId)
+    };
+
+    setSelectedWorkflow(workflowExecution);
+    
+    setAgents(prev => prev.map(a => 
+      a.id === agentId 
+        ? { ...a, status: 'running', progress: 0, lastRun: new Date() }
+        : a
+    ));
+    
+    addEvent('agent_started', `${agent.name} started`);
+    executeWorkflowSteps(workflowExecution);
+  };
+
+  const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
+    const agent = agents.find(a => a.id === agentId);
+    if (!agent) return [];
+
+    switch (agentId) {
+      case 'welcome-agent':
+        return [
+          {
+            id: 'welcome-1',
+            name: 'Analyze Contributor Profile',
+            description: 'Analyze GitHub profile, contribution history, and technical background',
+            type: 'data_collection',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'welcome-2',
+            name: 'Send Personalized Welcome',
+            description: 'Send customized welcome message based on contributor analysis',
+            type: 'notification',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'welcome-3',
+            name: 'Generate Environment Setup Guide',
+            description: 'Create personalized development environment setup checklist',
+            type: 'automated',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'welcome-4',
+            name: 'Mentor Assignment Decision',
+            description: 'Review and approve mentor assignment based on contributor profile and availability',
+            type: 'human_approval',
+            status: 'pending',
+            approvalOptions: [
+              { id: 'approve', label: 'Assign Mentor', description: 'This mentor is a good match', action: 'approve' },
+              { id: 'reassign', label: 'Choose Different Mentor', description: 'Select a different mentor', action: 'modify' },
+              { id: 'skip', label: 'Skip Mentor Assignment', description: 'Proceed without mentor', action: 'skip' }
+            ]
+          },
+          {
+            id: 'welcome-5',
+            name: 'Schedule Onboarding Session',
+            description: 'Schedule welcome call with assigned mentor and team',
+            type: 'automated',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'welcome-6',
+            name: 'Curate Learning Resources',
+            description: 'Send personalized learning materials and documentation',
+            type: 'automated',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'welcome-7',
+            name: 'Setup Verification Check',
+            description: 'Verify development environment is properly configured',
+            type: 'data_collection',
+            status: 'pending',
+            approvalOptions: []
+          }
+        ];
+      case 'contribution-agent':
+        return [
+          {
+            id: 'contrib-1',
+            name: 'Analyze Contributor Profile & Skills',
+            description: 'Deep analysis of contributor background, skills, and learning preferences',
+            type: 'data_collection',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'contrib-2',
+            name: 'Issue Recommendation Decision',
+            description: 'Review and approve recommended first issue based on contributor skill analysis',
+            type: 'human_approval',
+            status: 'pending',
+            approvalOptions: [
+              { id: 'approve', label: 'Assign This Issue', description: 'Perfect for skill level', action: 'approve' },
+              { id: 'suggest-alternative', label: 'Choose Different Issue', description: 'Select alternative', action: 'modify' },
+              { id: 'create-custom', label: 'Create Custom Task', description: 'Design tailored task', action: 'modify' }
+            ]
+          },
+          {
+            id: 'contrib-3',
+            name: 'Reserve and Assign Issue',
+            description: 'Formally assign the chosen issue to the contributor',
+            type: 'automated',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'contrib-4',
+            name: 'Development Environment Setup',
+            description: 'Guide contributor through complete local development environment configuration',
+            type: 'automated',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'contrib-5',
+            name: 'Create Feature Branch Strategy',
+            description: 'Help contributor create properly named feature branch and establish workflow',
+            type: 'automated',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'contrib-6',
+            name: 'Implementation Guidance & Checkpoints',
+            description: 'Provide step-by-step implementation guidance with interactive checkpoints',
+            type: 'data_collection',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'contrib-7',
+            name: 'Code Review & Merge Decision',
+            description: 'Submit completed work for code review and determine merge readiness',
+            type: 'human_approval',
+            status: 'pending',
+            approvalOptions: [
+              { id: 'approve', label: 'Approve & Merge', description: 'Ready for merge', action: 'approve' },
+              { id: 'request-changes', label: 'Request Changes', description: 'Needs revisions', action: 'modify' },
+              { id: 'more-guidance', label: 'More Guidance', description: 'Needs additional help', action: 'modify' }
+            ]
+          }
+        ];
+      case 'triage-agent':
+        return [
+          {
+            id: 'triage-1',
+            name: 'Monitor Repository Activity',
+            description: 'Continuously monitor repository for new issues, PRs, and contributor activity patterns',
+            type: 'automated',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'triage-2',
+            name: 'Intelligent Issue Analysis',
+            description: 'Analyze and categorize issues using NLP and historical data',
+            type: 'automated',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'triage-3',
+            name: 'Label & Priority Assignment',
+            description: 'Review and approve AI-suggested labels and priority assignments',
+            type: 'human_approval',
+            status: 'pending',
+            approvalOptions: [
+              { id: 'approve', label: 'Apply Suggestions', description: 'Use AI suggestions', action: 'approve' },
+              { id: 'modify', label: 'Modify Labels', description: 'Adjust before applying', action: 'modify' },
+              { id: 'manual', label: 'Manual Assignment', description: 'Handle manually', action: 'reject' }
+            ]
+          },
+          {
+            id: 'triage-4',
+            name: 'Contributor Matching Algorithm',
+            description: 'Intelligently match issues with suitable contributors and mentors',
+            type: 'automated',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'triage-5',
+            name: 'Personalized Outreach Strategy',
+            description: 'Design and execute personalized outreach to matched contributors',
+            type: 'human_approval',
+            status: 'pending',
+            approvalOptions: [
+              { id: 'approve', label: 'Send Outreach', description: 'Execute strategy', action: 'approve' },
+              { id: 'modify', label: 'Modify Strategy', description: 'Adjust approach', action: 'modify' },
+              { id: 'skip', label: 'Skip Outreach', description: 'Do not send', action: 'skip' }
+            ]
+          },
+          {
+            id: 'triage-6',
+            name: 'Progress Monitoring & Analytics',
+            description: 'Track contributor progress and identify intervention opportunities',
+            type: 'data_collection',
+            status: 'pending',
+            approvalOptions: []
+          },
+          {
+            id: 'triage-7',
+            name: 'Adaptive Mentorship Deployment',
+            description: 'Deploy appropriate mentorship resources and human intervention',
+            type: 'human_approval',
+            status: 'pending',
+            approvalOptions: [
+              { id: 'auto_mentorship', label: 'Deploy AI Mentorship', description: 'Let AI handle', action: 'approve' },
+              { id: 'human_mentor', label: 'Assign Human Mentor', description: 'Assign experienced mentor', action: 'modify' },
+              { id: 'hybrid', label: 'Hybrid Approach', description: 'Combine AI + human', action: 'modify' },
+              { id: 'resources_only', label: 'Send Resources Only', description: 'Learning materials only', action: 'skip' }
+            ]
+          }
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const executeWorkflowSteps = (workflow: WorkflowExecution) => {
+    let currentStepIndex = 0;
+    
+    const executeNextStep = () => {
+      if (currentStepIndex >= workflow.steps.length) {
+        completeWorkflow(workflow);
+        return;
+      }
+
+      const step = workflow.steps[currentStepIndex];
+      const updatedWorkflow = { ...workflow };
+      updatedWorkflow.currentStepIndex = currentStepIndex;
+      updatedWorkflow.steps = [...workflow.steps];
+      updatedWorkflow.steps[currentStepIndex] = { ...step, status: 'running', startTime: new Date() };
+      
+      setSelectedWorkflow(updatedWorkflow);
+      addEvent('step_started', `${step.name} started`);
+      
+      // Simulate step execution
+      setTimeout(() => {
+        const processedStep = { ...step, endTime: new Date() };
+        processedStep.executionTime = processedStep.endTime.getTime() - (processedStep.startTime?.getTime() || 0);
+        processedStep.simulatedData = generateSimulatedData(step);
+        
+        if (step.type === 'human_approval') {
+          processedStep.status = 'waiting_approval';
+          updatedWorkflow.steps[currentStepIndex] = processedStep;
+          setSelectedWorkflow(updatedWorkflow);
+          addEvent('approval_requested', `Approval required for ${step.name}`);
+        } else {
+          processedStep.status = 'completed';
+          updatedWorkflow.steps[currentStepIndex] = processedStep;
+          setSelectedWorkflow(updatedWorkflow);
+          addEvent('step_completed', `${step.name} completed`);
+          currentStepIndex++;
+          setTimeout(executeNextStep, 1000 / simulationSpeed);
+        }
+      }, 2000 / simulationSpeed);
+    };
+    
+    executeNextStep();
+  };
+
+  const generateSimulatedData = (step: WorkflowStep) => {
+    switch (step.id) {
+      case 'welcome-1':
+        return {
+          technical_experience: 'intermediate',
+          preferred_languages: ['TypeScript', 'JavaScript'],
+          activity_level: 'moderate',
+          confidence: 0.85
+        };
+      case 'welcome-2':
+        return {
+          message: 'Welcome johndoe! We noticed your experience with TypeScript. Here are some great first issues...',
+          personalization_score: 0.9
+        };
+      case 'welcome-4':
+        return {
+          recommended_mentor: 'senior_dev_123',
+          reasoning: 'Matches TypeScript experience and timezone',
+          alternatives: ['mentor_456', 'mentor_789']
+        };
+      case 'contrib-2':
+        return {
+          recommended_issue: 'ISSUE-123: Fix typo in README',
+          reasoning: 'Matches documentation experience and provides good learning opportunity',
+          estimated_time: '4-6 hours',
+          learning_value: 'high'
+        };
+      case 'triage-2':
+        return {
+          category: 'bug_report',
+          complexity: 'moderate',
+          sentiment: 'neutral',
+          urgency: 'medium',
+          estimated_effort: '4-6 hours'
+        };
+      default:
+        return { status: 'completed', timestamp: new Date() };
+    }
+  };
+
+  const handleApproval = (workflowId: string, stepId: string, action: string) => {
+    const workflow = selectedWorkflow;
+    if (!workflow || workflow.id !== workflowId) return;
+
+    const stepIndex = workflow.steps.findIndex(s => s.id === stepId);
+    if (stepIndex === -1) return;
+
+    const updatedWorkflow = { ...workflow };
+    updatedWorkflow.steps = [...workflow.steps];
+    updatedWorkflow.steps[stepIndex] = {
+      ...workflow.steps[stepIndex],
+      status: 'completed',
+      endTime: new Date(),
+      simulatedData: { ...workflow.steps[stepIndex].simulatedData, approval: action }
+    };
+
+    setSelectedWorkflow(updatedWorkflow);
+    addEvent('approval_completed', `Step ${workflow.steps[stepIndex].name} ${action}d`);
+
+    // Continue with next step
+    setTimeout(() => {
+      const nextWorkflow = { ...updatedWorkflow, currentStepIndex: stepIndex + 1 };
+      executeWorkflowSteps(nextWorkflow);
+    }, 1000 / simulationSpeed);
+  };
+
+  const completeWorkflow = (workflow: WorkflowExecution) => {
+    const completedWorkflow = { ...workflow, status: 'completed' as const, endTime: new Date() };
+    setSelectedWorkflow(completedWorkflow);
+    
     setAgents(prev => prev.map(agent => 
-      agent.id === agentId 
-        ? { ...agent, status: 'running', progress: 0, lastRun: new Date() }
+      agent.id === workflow.agentId 
+        ? { ...agent, status: 'completed', progress: 100, metrics: { ...agent.metrics, totalWorkflows: agent.metrics.totalWorkflows + 1 } }
         : agent
     ));
     
-    addEvent('agent_started', `${agents.find(a => a.id === agentId)?.name} started`);
-    
-    // Simulate progress
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      setAgents(prev => prev.map(agent => 
-        agent.id === agentId 
-          ? { ...agent, progress }
-          : agent
-      ));
-      
-      if (progress >= 100) {
-        clearInterval(interval);
-        setAgents(prev => prev.map(agent => 
-          agent.id === agentId 
-            ? { ...agent, status: 'completed', progress: 100, metrics: { ...agent.metrics, totalWorkflows: agent.metrics.totalWorkflows + 1 } }
-            : agent
-        ));
-        addEvent('agent_completed', `${agents.find(a => a.id === agentId)?.name} completed`);
-      }
-    }, 500 / simulationSpeed);
+    addEvent('workflow_completed', `${workflow.agentName} workflow completed`);
   };
 
   const addEvent = (type: string, message: string) => {
@@ -1525,32 +1891,48 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => startAgentSimulation(agent.id)}
-                  disabled={agent.status !== 'idle'}
-                  className={`w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                    agent.status === 'idle' 
-                      ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md' 
-                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  }`}
-                >
-                  {agent.status === 'idle' ? (
-                    <>
-                      <Play className="w-4 h-4 inline mr-2" />
-                      Start Simulation
-                    </>
-                  ) : agent.status === 'running' ? (
-                    <>
-                      <Loader2 className="w-4 h-4 inline mr-2 animate-spin" />
-                      Running...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="w-4 h-4 inline mr-2" />
-                      {agent.status}
-                    </>
-                  )}
-                </button>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => {
+                      const workflow = selectedWorkflow?.agentId === agent.id ? null : 
+                        { id: `workflow-${agent.id}`, agentId: agent.id, agentName: agent.name, status: 'idle' as const, currentStepIndex: 0, steps: getWorkflowSteps(agent.id), contributor: { username: 'johndoe', experience: 'intermediate', interests: ['frontend', 'documentation'] } };
+                      setSelectedWorkflow(workflow);
+                    }}
+                    className={`flex-1 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      selectedWorkflow?.agentId === agent.id
+                        ? 'bg-purple-600 text-white hover:bg-purple-700'
+                        : 'bg-gray-600 text-white hover:bg-gray-700'
+                    }`}
+                  >
+                    {selectedWorkflow?.agentId === agent.id ? 'Hide Details' : 'View Details'}
+                  </button>
+                  <button
+                    onClick={() => startAgentSimulation(agent.id)}
+                    disabled={agent.status !== 'idle'}
+                    className={`flex-1 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      agent.status === 'idle' 
+                        ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md' 
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    {agent.status === 'idle' ? (
+                      <>
+                        <Play className="w-4 h-4 inline mr-2" />
+                        Start
+                      </>
+                    ) : agent.status === 'running' ? (
+                      <>
+                        <Loader2 className="w-4 h-4 inline mr-2 animate-spin" />
+                        Running
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4 inline mr-2" />
+                        {agent.status}
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </Card>
           ))}
@@ -1614,6 +1996,172 @@ export default function Dashboard() {
             ))}
           </div>
         </Card>
+
+        {/* Detailed Workflow View */}
+        {selectedWorkflow && (
+          <Card className="mt-8">
+            {/* Workflow Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-4">
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                  selectedWorkflow.agentId === 'welcome-agent' ? 'bg-blue-100' :
+                  selectedWorkflow.agentId === 'contribution-agent' ? 'bg-green-100' : 'bg-purple-100'
+                }`}>
+                  {selectedWorkflow.agentId === 'welcome-agent' ? <Users className="w-6 h-6 text-blue-600" /> :
+                   selectedWorkflow.agentId === 'contribution-agent' ? <GitBranch className="w-6 h-6 text-green-600" /> :
+                   <Brain className="w-6 h-6 text-purple-600" />}
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">{selectedWorkflow.agentName}</h3>
+                  <p className="text-sm text-gray-600">
+                    Contributor: {selectedWorkflow.contributor.username} | 
+                    Experience: {selectedWorkflow.contributor.experience}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedWorkflow.status)}`}>
+                  {selectedWorkflow.status}
+                </span>
+                <div className="flex items-center space-x-1 text-sm text-gray-500">
+                  <Clock className="w-4 h-4" />
+                  <span>
+                    {selectedWorkflow.startTime && new Date(selectedWorkflow.startTime).toLocaleTimeString()}
+                    {selectedWorkflow.endTime && ` - ${new Date(selectedWorkflow.endTime).toLocaleTimeString()}`}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="mb-6">
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-gray-500">Overall Progress</span>
+                <span className="font-medium">
+                  {selectedWorkflow.currentStepIndex + 1}/{selectedWorkflow.steps.length} steps
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${((selectedWorkflow.currentStepIndex + 1) / selectedWorkflow.steps.length) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Vertical Timeline */}
+            <div className="relative">
+              {/* Timeline Line */}
+              <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-300" />
+              
+              {/* Steps */}
+              <div className="space-y-6">
+                {selectedWorkflow.steps.map((step, index) => (
+                  <div key={step.id} className="relative flex items-start space-x-4">
+                    {/* Step Icon */}
+                    <div className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center border-2 ${
+                      step.status === 'completed' ? 'bg-green-100 border-green-500' :
+                      step.status === 'running' ? 'bg-blue-100 border-blue-500' :
+                      step.status === 'waiting_approval' ? 'bg-yellow-100 border-yellow-500' :
+                      'bg-gray-100 border-gray-300'
+                    }`}>
+                      {step.status === 'completed' ? <CheckCircle2 className="w-5 h-5 text-green-600" /> :
+                       step.status === 'running' ? <Loader2 className="w-5 h-5 text-blue-600 animate-spin" /> :
+                       step.status === 'waiting_approval' ? <AlertCircle className="w-5 h-5 text-yellow-600" /> :
+                       step.type === 'human_approval' ? <User className="w-5 h-5 text-gray-600" /> :
+                       <Bot className="w-5 h-5 text-gray-600" />}
+                    </div>
+
+                    {/* Step Content */}
+                    <div className={`flex-1 p-4 rounded-lg border ${
+                      step.status === 'running' ? 'bg-blue-50 border-blue-200' :
+                      step.status === 'waiting_approval' ? 'bg-yellow-50 border-yellow-200' :
+                      step.status === 'completed' ? 'bg-green-50 border-green-200' :
+                      'bg-gray-50 border-gray-200'
+                    }`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h4 className="font-semibold text-gray-900">
+                            {index + 1}. {step.name}
+                          </h4>
+                          <p className="text-sm text-gray-600">{step.description}</p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${
+                            step.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            step.status === 'running' ? 'bg-blue-100 text-blue-800' :
+                            step.status === 'waiting_approval' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {step.status.replace('_', ' ')}
+                          </span>
+                          {step.executionTime && (
+                            <div className="flex items-center text-xs text-gray-500">
+                              <Clock className="w-3 h-3 mr-1" />
+                              {(step.executionTime / 1000).toFixed(1)}s
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Simulated Data Display */}
+                      {step.simulatedData && (
+                        <div className="mt-3 p-3 bg-white rounded border">
+                          <h5 className="text-sm font-medium text-gray-700 mb-2">Generated Output:</h5>
+                          <pre className="text-xs text-gray-600 whitespace-pre-wrap">
+                            {JSON.stringify(step.simulatedData, null, 2)}
+                          </pre>
+                        </div>
+                      )}
+
+                      {/* Approval UI */}
+                      {step.status === 'waiting_approval' && step.approvalOptions && (
+                        <div className="mt-4 p-3 bg-yellow-100 rounded border border-yellow-200">
+                          <h5 className="text-sm font-medium text-yellow-800 mb-2">Approval Required:</h5>
+                          <div className="space-y-2">
+                            {step.approvalOptions.map((option) => (
+                              <button
+                                key={option.id}
+                                onClick={() => handleApproval(selectedWorkflow.id, step.id, option.action)}
+                                className={`w-full text-left p-3 rounded border transition-colors ${
+                                  option.action === 'approve' ? 'bg-green-50 border-green-200 hover:bg-green-100' :
+                                  option.action === 'modify' ? 'bg-blue-50 border-blue-200 hover:bg-blue-100' :
+                                  'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                                }`}
+                              >
+                                <div className="font-medium text-sm">{option.label}</div>
+                                <div className="text-xs text-gray-600 mt-1">{option.description}</div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Workflow Controls */}
+            <div className="flex justify-end space-x-3 mt-8 pt-6 border-t">
+              <button
+                onClick={() => setSelectedWorkflow(null)}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                Close View
+              </button>
+              <button
+                onClick={() => {
+                  const agent = agents.find(a => a.id === selectedWorkflow.agentId);
+                  if (agent) startAgentSimulation(agent.id);
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Restart Workflow
+              </button>
+            </div>
+          </Card>
+        )}
       </div>
 
       </div>
