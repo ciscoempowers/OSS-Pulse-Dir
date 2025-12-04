@@ -55,9 +55,9 @@ const handleApiError = (error: any, context: string): any[] => {
     console.error('Rate limit exceeded or token is invalid');
   }
   
-  // Return fallback data for production when token is missing
-  if (process.env.NODE_ENV === 'production') {
-    console.warn('No GitHub token found, returning fallback data');
+  // Return fallback data when token is missing or request fails
+  if (process.env.NODE_ENV === 'production' || error?.message?.includes('rate limit')) {
+    console.warn('GitHub API error, returning fallback data');
     switch (context) {
       case 'getAllMilestones':
         return [{
@@ -319,9 +319,9 @@ export async function getRepoStars(repo: string): Promise<{stars: number; forks:
   } catch (error: any) {
     console.error(`Error fetching stars for ${repo}:`, error);
     
-    // Return fallback data for production when token is missing
-    if (process.env.NODE_ENV === 'production') {
-      console.warn('No GitHub token found, returning fallback repo data');
+    // Return fallback data when token is missing or request fails
+    if (process.env.NODE_ENV === 'production' || error?.message?.includes('rate limit')) {
+      console.warn('GitHub API error, returning fallback repo data');
       return { 
         stars: 42, 
         forks: 15, 
@@ -598,9 +598,9 @@ export async function getDetailedContributorAnalytics(repo: string): Promise<{
   } catch (error: any) {
     console.error(`Error fetching detailed contributor analytics for ${repo}:`, error);
     
-    // Return fallback data for production when token is missing
-    if (process.env.NODE_ENV === 'production') {
-      console.warn('No GitHub token found, returning fallback contributor analytics');
+    // Return fallback data when token is missing or request fails
+    if (process.env.NODE_ENV === 'production' || error?.message?.includes('rate limit')) {
+      console.warn('GitHub API error, returning fallback contributor analytics');
       return {
         newContributorsPerMonth: [
           { month: 'Jul', newContributors: 2 },
