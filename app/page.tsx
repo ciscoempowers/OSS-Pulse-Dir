@@ -1357,44 +1357,6 @@ export default function Dashboard() {
         </div>
       </Card>
 
-      {/* Virality Debug - Dependent Projects */}
-      <Card className="mb-8">
-        <h3 className="text-xl font-bold text-black mb-4">Dependent Projects (Debug)</h3>
-        <div className="space-y-2">
-          <div className="text-sm text-gray-600">
-            <strong>Dependents Count:</strong> {viralityData.dependentsCount}
-          </div>
-          <div className="text-sm text-gray-600">
-            <strong>Packages Count:</strong> {viralityData.packagesCount}
-          </div>
-          <div className="text-sm text-gray-600">
-            <strong>K-Factor:</strong> {viralityData.kFactor}
-          </div>
-          
-          {viralityData.topDependents.length > 0 ? (
-            <div className="mt-4">
-              <h4 className="font-semibold text-black mb-2">Top Dependent Projects:</h4>
-              <div className="space-y-2">
-                {viralityData.topDependents.map((dependent, index) => (
-                  <div key={index} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                    <div className="font-medium text-black">{dependent.name}</div>
-                    <div className="flex space-x-4 text-sm text-gray-600">
-                      <span>⭐ {dependent.stars}</span>
-                      <span>🍴 {dependent.forks}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="mt-4 text-center text-gray-500 py-4">
-              No dependent projects found. Check console for debug messages.
-            </div>
-          )}
-        </div>
-      </Card>
-
-      
       </div>
 
       {/* Multi-Agent Dashboard - Sample Data */}
