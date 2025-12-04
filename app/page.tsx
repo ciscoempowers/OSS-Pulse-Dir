@@ -8,26 +8,22 @@ import 'gantt-task-react/dist/index.css';
 import type { Milestone as GitHubMilestone, Discussion as GitHubDiscussion } from './lib/github';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import AIStrategicPartner from './components/AIStrategicPartner';
+import { Activity, Play, Square, RotateCcw, Users, GitBranch, Brain, Loader2, CheckCircle } from 'lucide-react';
 
 // Agent interfaces
 interface Agent {
   id: string;
   name: string;
-  type: 'engagement' | 'onboarding' | 'analytics';
-  status: 'active' | 'idle' | 'processing';
-  lastActivity: string;
-  tasksCompleted: number;
-  currentTask?: string;
-}
-
-interface AgentTask {
-  id: string;
-  agentId: string;
-  type: string;
+  type: 'welcome' | 'contribution' | 'triage';
+  status: 'idle' | 'running' | 'paused' | 'completed';
   description: string;
-  status: 'pending' | 'in-progress' | 'completed';
-  createdAt: string;
-  completedAt?: string;
+  progress: number;
+  lastRun?: Date;
+  metrics: {
+    totalWorkflows: number;
+    successRate: number;
+    averageCompletionTime: number;
+  };
 }
 
 interface GanttTask extends Task {
@@ -235,64 +231,123 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [repoStats, setRepoStats] = useState({ stars: 0, forks: 0, name: '', openIssues: 0, downloads: 0, contributors: 0, newContributorsThisMonth: 0, starsThisMonth: 0, forksThisMonth: 0, downloadsThisMonth: 0 });
   
-  // Agent system state
+  // Agent simulation state
+  const [isSimulationRunning, setIsSimulationRunning] = useState(false);
+  const [simulationSpeed, setSimulationSpeed] = useState(1);
+  const [activeWorkflows, setActiveWorkflows] = useState<any[]>([]);
+  const [events, setEvents] = useState<any[]>([]);
+
   const [agents, setAgents] = useState<Agent[]>([
     {
-      id: 'engagement-1',
-      name: 'Engagement Agent',
-      type: 'engagement',
-      status: 'active',
-      lastActivity: '2 minutes ago',
-      tasksCompleted: 47,
-      currentTask: 'Responding to issue #123'
+      id: 'welcome-agent',
+      name: 'Welcome & Environment Setup',
+      type: 'welcome',
+      status: 'idle',
+      description: 'Automated welcome process with environment setup guidance for new contributors',
+      progress: 0,
+      metrics: {
+        totalWorkflows: 0,
+        successRate: 95,
+        averageCompletionTime: 20
+      }
     },
     {
-      id: 'onboarding-1', 
-      name: 'Onboarding Agent',
-      type: 'onboarding',
-      status: 'processing',
-      lastActivity: '5 minutes ago',
-      tasksCompleted: 23,
-      currentTask: 'Guiding new contributor @johndoe'
+      id: 'contribution-agent', 
+      name: 'First Contribution Facilitator',
+      type: 'contribution',
+      status: 'idle',
+      description: 'Guides contributors through their first contribution to the project',
+      progress: 0,
+      metrics: {
+        totalWorkflows: 0,
+        successRate: 88,
+        averageCompletionTime: 60
+      }
     },
     {
-      id: 'analytics-1',
-      name: 'Analytics Agent', 
-      type: 'analytics',
-      status: 'active',
-      lastActivity: '1 minute ago',
-      tasksCompleted: 156,
-      currentTask: 'Generating community health report'
+      id: 'triage-agent',
+      name: 'Smart Triage & Mentorship', 
+      type: 'triage',
+      status: 'idle',
+      description: 'Intelligent issue triage system with ongoing mentorship and contributor support',
+      progress: 0,
+      metrics: {
+        totalWorkflows: 0,
+        successRate: 92,
+        averageCompletionTime: 45
+      }
     }
   ]);
-  
-  const [agentTasks, setAgentTasks] = useState<AgentTask[]>([
-    {
-      id: 'task-1',
-      agentId: 'engagement-1',
-      type: 'issue-response',
-      description: 'Respond to GitHub issue about installation problems',
-      status: 'completed',
-      createdAt: '2025-12-02T10:30:00Z',
-      completedAt: '2025-12-02T10:45:00Z'
-    },
-    {
-      id: 'task-2',
-      agentId: 'onboarding-1',
-      type: 'contributor-welcome',
-      description: 'Send welcome message to new contributor @johndoe',
-      status: 'in-progress',
-      createdAt: '2025-12-02T11:15:00Z'
-    },
-    {
-      id: 'task-3',
-      agentId: 'analytics-1',
-      type: 'community-report',
-      description: 'Generate weekly community engagement metrics',
-      status: 'pending',
-      createdAt: '2025-12-02T12:00:00Z'
+
+  // Simulation functions
+  const startSimulation = () => {
+    setIsSimulationRunning(true);
+    addEvent('simulation_started', 'Simulation started');
+  };
+
+  const stopSimulation = () => {
+    setIsSimulationRunning(false);
+    addEvent('simulation_stopped', 'Simulation stopped');
+  };
+
+  const resetSimulation = () => {
+    setIsSimulationRunning(false);
+    setAgents(agents.map(agent => ({ ...agent, status: 'idle', progress: 0 })));
+    setActiveWorkflows([]);
+    setEvents([]);
+  };
+
+  const startAgentSimulation = (agentId: string) => {
+    setAgents(prev => prev.map(agent => 
+      agent.id === agentId 
+        ? { ...agent, status: 'running', progress: 0, lastRun: new Date() }
+        : agent
+    ));
+    
+    addEvent('agent_started', `${agents.find(a => a.id === agentId)?.name} started`);
+    
+    // Simulate progress
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      setAgents(prev => prev.map(agent => 
+        agent.id === agentId 
+          ? { ...agent, progress }
+          : agent
+      ));
+      
+      if (progress >= 100) {
+        clearInterval(interval);
+        setAgents(prev => prev.map(agent => 
+          agent.id === agentId 
+            ? { ...agent, status: 'completed', progress: 100, metrics: { ...agent.metrics, totalWorkflows: agent.metrics.totalWorkflows + 1 } }
+            : agent
+        ));
+        addEvent('agent_completed', `${agents.find(a => a.id === agentId)?.name} completed`);
+      }
+    }, 500 / simulationSpeed);
+  };
+
+  const addEvent = (type: string, message: string) => {
+    const newEvent = {
+      id: Date.now().toString(),
+      type,
+      message,
+      timestamp: new Date()
+    };
+    setEvents(prev => [...prev, newEvent]);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'idle': return 'bg-gray-100 text-gray-800';
+      case 'running': return 'bg-blue-100 text-blue-800';
+      case 'paused': return 'bg-yellow-100 text-yellow-800';
+      case 'completed': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
-  ]);
+  };
+
   const [contributorGrowth, setContributorGrowth] = useState<{month: string; contributors: number}[]>([
     { month: 'Jul', contributors: 3 },
     { month: 'Aug', contributors: 6 },
@@ -1356,6 +1411,210 @@ export default function Dashboard() {
           </a>
         </div>
       </Card>
+
+      {/* Agent Simulation Section */}
+      <div className="mt-12">
+        <div className="mb-8 text-center">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-sm font-medium mb-4">
+            <Activity className="w-4 h-4 mr-2" />
+            Simulated Agentic Workflow
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">AI Agent Simulation System</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Experience automated OSS contributor onboarding through intelligent AI agents. 
+            Watch as they analyze profiles, assign mentors, and guide contributions in real-time.
+          </p>
+        </div>
+
+        {/* Simulation Controls */}
+        <Card className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900">Simulation Controls</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Status: <span className="font-medium">{isSimulationRunning ? 'Running' : 'Stopped'}</span> | 
+                Speed: {simulationSpeed}x
+              </p>
+            </div>
+            <div className="flex space-x-3">
+              {!isSimulationRunning ? (
+                <button
+                  onClick={startSimulation}
+                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Start Simulation
+                </button>
+              ) : (
+                <button
+                  onClick={stopSimulation}
+                  className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  <Square className="w-4 h-4 mr-2" />
+                  Stop Simulation
+                </button>
+              )}
+              <button
+                onClick={resetSimulation}
+                className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset
+              </button>
+            </div>
+          </div>
+        </Card>
+
+        {/* Agents Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {agents.map((agent) => (
+            <Card key={agent.id} className="hover:shadow-lg transition-all duration-300 border-0 shadow-md">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${
+                      agent.type === 'welcome' ? 'bg-blue-100' :
+                      agent.type === 'contribution' ? 'bg-green-100' : 'bg-purple-100'
+                    }`}>
+                      {agent.type === 'welcome' ? <Users className="w-5 h-5 text-blue-600" /> :
+                       agent.type === 'contribution' ? <GitBranch className="w-5 h-5 text-green-600" /> :
+                       <Brain className="w-5 h-5 text-purple-600" />}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">{agent.name}</h3>
+                      <p className="text-sm text-gray-500">{agent.type}</p>
+                    </div>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium transition-colors ${getStatusColor(agent.status)}`}>
+                    {agent.status}
+                  </span>
+                </div>
+                
+                <p className="text-sm text-gray-600 mb-4 line-clamp-2">{agent.description}</p>
+                
+                {/* Progress Indicator */}
+                {agent.status === 'running' && (
+                  <div className="mb-4">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-500">Progress</span>
+                      <span className="font-medium">{agent.progress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                        style={{ width: `${agent.progress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Workflows:</span>
+                    <span className="font-medium">{agent.metrics.totalWorkflows}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Success Rate:</span>
+                    <span className="font-medium">{agent.metrics.successRate}%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Last Run:</span>
+                    <span className="font-medium">
+                      {agent.lastRun ? new Date(agent.lastRun).toLocaleTimeString() : 'Never'}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => startAgentSimulation(agent.id)}
+                  disabled={agent.status !== 'idle'}
+                  className={`w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    agent.status === 'idle' 
+                      ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md' 
+                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  {agent.status === 'idle' ? (
+                    <>
+                      <Play className="w-4 h-4 inline mr-2" />
+                      Start Simulation
+                    </>
+                  ) : agent.status === 'running' ? (
+                    <>
+                      <Loader2 className="w-4 h-4 inline mr-2 animate-spin" />
+                      Running...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4 inline mr-2" />
+                      {agent.status}
+                    </>
+                  )}
+                </button>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Active Workflows */}
+        {activeWorkflows.length > 0 && (
+          <Card className="mb-8">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Active Workflows</h3>
+            <div className="space-y-3">
+              {activeWorkflows.map((workflow) => (
+                <div key={workflow.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-900">{workflow.name}</p>
+                    <p className="text-sm text-gray-600">
+                      Agent: {workflow.agentName} | Step {workflow.currentStep + 1}/{workflow.totalSteps}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-32 bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-green-600 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${workflow.progress}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-gray-600">{workflow.progress}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
+        {/* Recent Events */}
+        <Card>
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">Recent Events</h3>
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {events.slice(-10).reverse().map((event) => (
+              <div key={event.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                <div className="flex items-center">
+                  <div className={`w-2 h-2 rounded-full mr-3 ${
+                    event.type.includes('start') ? 'bg-blue-500' :
+                    event.type.includes('complete') ? 'bg-green-500' :
+                    event.type.includes('approval') ? 'bg-yellow-500' :
+                    'bg-gray-400'
+                  }`} />
+                  <div>
+                    <p className="font-medium text-gray-900">{event.message}</p>
+                    <p className="text-xs text-gray-500">{new Date(event.timestamp).toLocaleTimeString()}</p>
+                  </div>
+                </div>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  event.type.includes('start') ? 'bg-blue-100 text-blue-800' :
+                  event.type.includes('complete') ? 'bg-green-100 text-green-800' :
+                  event.type.includes('approval') ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}>
+                  {event.type}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
 
       </div>
 
