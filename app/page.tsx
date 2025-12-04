@@ -1,6 +1,13 @@
 'use client'; // v2 - TECH HEALTH COMPLETELY REMOVED bust
 
 import { useEffect, useState, useMemo } from 'react';
+
+// Add immediate test
+console.log('=== PAGE COMPONENT LOADING ===');
+if (typeof window !== 'undefined') {
+  console.log('Window object exists');
+  alert('Page component is loading');
+}
 import { Card } from '@tremor/react';
 import { Gantt, ViewMode, Task } from 'gantt-task-react';
 import 'gantt-task-react/dist/index.css';
