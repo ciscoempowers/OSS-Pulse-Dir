@@ -2,7 +2,15 @@ import { Octokit } from '@octokit/rest';
 
 // Initialize Octokit with authentication
 const token = process.env.GITHUB_TOKEN || process.env.NEXT_PUBLIC_GITHUB_TOKEN;
-console.log('GitHub token available:', !!token);
+console.log('GitHub token available:', !!token, 'Token length:', token?.length || 0);
+
+if (!token) {
+  console.error('No GitHub token found in environment variables');
+  console.log('Available env vars:', {
+    GITHUB_TOKEN: !!process.env.GITHUB_TOKEN,
+    NEXT_PUBLIC_GITHUB_TOKEN: !!process.env.NEXT_PUBLIC_GITHUB_TOKEN
+  });
+}
 
 const octokit = new Octokit({
   auth: token,
