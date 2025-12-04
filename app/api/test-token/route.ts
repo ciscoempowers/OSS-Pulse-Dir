@@ -3,20 +3,11 @@ import { Octokit } from '@octokit/rest';
 
 export async function GET() {
   try {
-    console.log('=== TOKEN TEST DEBUG ===');
-    console.log('All environment variables:', Object.keys(process.env));
-    console.log('GITHUB_TOKEN:', process.env.GITHUB_TOKEN ? 'EXISTS' : 'MISSING');
-    console.log('NEXT_PUBLIC_GITHUB_TOKEN:', process.env.NEXT_PUBLIC_GITHUB_TOKEN ? 'EXISTS' : 'MISSING');
-    
     const token = process.env.GITHUB_TOKEN || process.env.NEXT_PUBLIC_GITHUB_TOKEN;
     
     if (!token) {
       return NextResponse.json({ 
-        error: 'No token found',
-        envVars: {
-          GITHUB_TOKEN: !!process.env.GITHUB_TOKEN,
-          NEXT_PUBLIC_GITHUB_TOKEN: !!process.env.NEXT_PUBLIC_GITHUB_TOKEN
-        }
+        error: 'No GitHub token found in environment variables'
       }, { status: 500 });
     }
     

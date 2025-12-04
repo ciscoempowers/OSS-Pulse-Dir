@@ -2,12 +2,6 @@
 
 import { useEffect, useState, useMemo } from 'react';
 
-// Add immediate test
-console.log('=== PAGE COMPONENT LOADING ===');
-if (typeof window !== 'undefined') {
-  console.log('Window object exists');
-  alert('Page component is loading');
-}
 import { Card } from '@tremor/react';
 import { Gantt, ViewMode, Task } from 'gantt-task-react';
 import 'gantt-task-react/dist/index.css';
@@ -521,24 +515,6 @@ export default function Dashboard() {
       setLoading(false);
     };
 
-    console.log('About to test token API...');
-    alert('useEffect is running - check console for API calls');
-    
-    // Test API endpoint directly
-    fetch('/api/test-token')
-      .then(res => {
-        console.log('Token test response status:', res.status);
-        return res.json();
-      })
-      .then(data => {
-        console.log('=== TOKEN TEST RESULT ===');
-        console.log('Token test response:', data);
-      })
-      .catch(err => {
-        console.error('Token test error:', err);
-      });
-    
-    console.log('About to fetch data...');
     fetchData();
   }, []);
 

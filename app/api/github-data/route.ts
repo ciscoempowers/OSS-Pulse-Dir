@@ -3,17 +3,6 @@ import { getAllMilestones, getDiscussions, getRepoStars, getContributorGrowth, g
 
 export async function GET() {
   try {
-    console.log('=== SERVER-SIDE GITHUB API DEBUG ===');
-    console.log('Environment variables available:');
-    console.log('- GITHUB_TOKEN exists:', !!process.env.GITHUB_TOKEN);
-    console.log('- NEXT_PUBLIC_GITHUB_TOKEN exists:', !!process.env.NEXT_PUBLIC_GITHUB_TOKEN);
-    console.log('- All env vars starting with GITHUB:', Object.keys(process.env).filter(k => k.startsWith('GITHUB')));
-    
-    // Force reload the github module to ensure fresh environment variables
-    delete require.cache[require.resolve('@/app/lib/github')];
-    
-    console.log('Fetching GitHub data on server side...');
-    
     const results = await Promise.allSettled([
       getAllMilestones(),
       getDiscussions(),
