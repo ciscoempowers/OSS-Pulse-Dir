@@ -1,8 +1,11 @@
 import { Octokit } from '@octokit/rest';
 
 // Initialize Octokit with authentication
+const token = process.env.GITHUB_TOKEN || process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+console.log('GitHub token available:', !!token);
+
 const octokit = new Octokit({
-  auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN,
+  auth: token,
   userAgent: 'agntcy-dashboard/1.0.0',
   request: {
     timeout: 10000
