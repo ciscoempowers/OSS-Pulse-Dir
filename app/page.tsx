@@ -449,10 +449,10 @@ export default function Dashboard() {
         if (data.discussions) setDiscussions(data.discussions);
         if (data.stars) setRepoStats(data.stars);
         if (data.contributorGrowth) setContributorGrowth(data.contributorGrowth);
-        if (data.contributorAnalytics) setContributorAnalytics(data.contributorAnalytics);
+        if (data.contributorAnalytics) setDetailedAnalytics(data.contributorAnalytics);
         if (data.dependents) setViralityData(data.dependents);
         if (data.adoption) setAdoptionMetrics(data.adoption);
-        if (data.devExperience) setDeveloperExperience(data.devExperience);
+        if (data.devExperience) setDevExperienceMetrics(data.devExperience);
         
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -487,7 +487,7 @@ export default function Dashboard() {
           stars: 0,
           forks: 0,
           name: 'dir',
-          open_issues_count: 0,
+          openIssues: 0,
           downloads: 0,
           contributors: 0,
           newContributorsThisMonth: 0,
@@ -501,9 +501,16 @@ export default function Dashboard() {
           retentionRates: [],
           mostActiveNewContributors: []
         });
-        setViralityData({ dependents: 0, packages: [] });
-        setAdoptionMetrics({ adoptionRate: 0 });
-        setDeveloperExperience({ score: 0 });
+        setViralityData({ dependentsCount: 0, packagesCount: 0, kFactor: 0, topDependents: [] });
+        setAdoptionMetrics({ downloadTrends: [], netNewDownloads: [], geographicDistribution: [], industryBreakdown: [] });
+        setDevExperienceMetrics({
+          issueResolutionTime: { averageHours: 0, trend: 'stable' },
+          documentationEngagement: { views: 0, uniqueReaders: 0 },
+          prMergeRate: 0,
+          codeChurnRate: 0,
+          bugFixTime: { averageHours: 0, trend: 'stable' },
+          onboardingExperience: { averageTimeToFirstPR: 0, documentationCompleteness: 0 }
+        });
       }
       
       setLoading(false);
