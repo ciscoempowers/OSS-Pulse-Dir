@@ -514,9 +514,15 @@ export default function Dashboard() {
       setLoading(false);
     };
 
+    console.log('About to test token API...');
+    alert('useEffect is running - check console for API calls');
+    
     // Test API endpoint directly
     fetch('/api/test-token')
-      .then(res => res.json())
+      .then(res => {
+        console.log('Token test response status:', res.status);
+        return res.json();
+      })
       .then(data => {
         console.log('=== TOKEN TEST RESULT ===');
         console.log('Token test response:', data);
@@ -525,6 +531,7 @@ export default function Dashboard() {
         console.error('Token test error:', err);
       });
     
+    console.log('About to fetch data...');
     fetchData();
   }, []);
 
