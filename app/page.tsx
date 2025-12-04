@@ -1,4 +1,4 @@
-'use client'; // v3 - FINAL VERSION - NO TECH HEALTH
+'use client'; // v2 - TECH HEALTH COMPLETELY REMOVED bust
 
 import { useEffect, useState, useMemo } from 'react';
 import { Card } from '@tremor/react';
@@ -592,8 +592,7 @@ export default function Dashboard() {
           setDevExperienceMetrics(devExperienceData.value);
         }
 
-        if (technicalData.status === 'fulfilled') {
-        }
+        // Technical health indicators removed
       } catch (error) {
         console.error('Error in fetchData:', error);
         setError('Failed to load data. Please check your connection and try again.');
@@ -673,16 +672,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Debug Info */}
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <h3 className="text-sm font-medium text-yellow-800 mb-2">Debug Info:</h3>
-          <div className="text-xs text-yellow-700 space-y-1">
-            <p>Milestones: {milestones.length} items</p>
-            <p>Discussions: {discussions.length} items</p>
-            <p>Retention Rates: {detailedAnalytics.retentionRates.length} items</p>
-            <p>Repo Stats: {repoStats.stars} stars, {repoStats.forks} forks</p>
-          </div>
-        </div>
+        {/* Debug Info - Hidden */}
 
         <header id="overview" className="mb-12 text-center">
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
