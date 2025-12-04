@@ -4,7 +4,6 @@ import { useEffect, useState, useMemo } from 'react';
 import { Card } from '@tremor/react';
 import { Gantt, ViewMode, Task } from 'gantt-task-react';
 import 'gantt-task-react/dist/index.css';
-import { getAllMilestones, getDiscussions, getRepoStars, getContributorGrowth, getDetailedContributorAnalytics, getGitHubDependents, getAdoptionMetrics, getDeveloperExperienceMetrics } from './lib/github';
 import type { Milestone as GitHubMilestone, Discussion as GitHubDiscussion } from './lib/github';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import AIStrategicPartner from './components/AIStrategicPartner';
@@ -432,173 +431,82 @@ export default function Dashboard() {
         setLoading(true);
         setError(null);
         
-        // Helper function to check if error is rate limit related
-        const isRateLimitError = (error: any) => {
-          if (error?.status === 403 || error?.response?.status === 403) {
-            return true;
-          }
-          if (error?.message?.includes('rate limit') || error?.message?.includes('API rate limit exceeded')) {
-            return true;
-          }
-          return false;
-        };
+        // Fetch data from server-side API route
+        const response = await fetch('/api/github-data');
         
-        const [milestonesData, discussionsData, repoData, growthData, analyticsData, viralityDataFetch, adoptionData, devExperienceData] = await Promise.allSettled([
-          getAllMilestones(),
-          getDiscussions(),
-          getRepoStars('dir'),
-          getContributorGrowth('dir'),
-          getDetailedContributorAnalytics('dir'),
-          getGitHubDependents('dir'),
-          getAdoptionMetrics('dir'),
-          getDeveloperExperienceMetrics('dir'),
-        ]);
-
-        // Check for rate limit errors and set appropriate error state
-        const rateLimitErrors = [
-          milestonesData, discussionsData, repoData, growthData, 
-          analyticsData, viralityDataFetch, adoptionData, devExperienceData
-        ].filter(data => data.status === 'rejected' && isRateLimitError(data.reason));
+        if (!response.ok) {
+          throw new Error(`Failed to fetch GitHub data: ${response.statusText}`);
+        }
         
-        if (rateLimitErrors.length > 0) {
-          setError('GitHub API rate limit exceeded. Some data may be unavailable. Please try again later.');
+        const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
         }
-
-        if (milestonesData.status === 'fulfilled') {
-          setMilestones(milestonesData.value);
-        } else {
-          console.error('Milestones data failed, using fallback:', milestonesData.reason);
-          // Fallback mock milestones
-          setMilestones([
-            {
-              id: 1,
-              number: 1,
-              title: 'Core Infrastructure v1.0',
-              description: 'Complete core infrastructure setup',
-              state: 'closed',
-              open_issues: 0,
-              closed_issues: 12,
-              created_at: '2024-07-01T00:00:00Z',
-              updated_at: '2024-07-15T00:00:00Z',
-              due_on: '2024-07-15T00:00:00Z',
-              html_url: 'https://github.com/agntcy/dir/milestone/1',
-              repository: 'dir'
-            },
-            {
-              id: 2,
-              number: 2,
-              title: 'API Integration v2.0',
-              description: 'Integrate with external APIs',
-              state: 'open',
-              open_issues: 5,
-              closed_issues: 8,
-              created_at: '2024-08-01T00:00:00Z',
-              updated_at: '2024-12-01T00:00:00Z',
-              due_on: '2024-12-31T00:00:00Z',
-              html_url: 'https://github.com/agntcy/dir/milestone/2',
-              repository: 'dir'
-            }
-          ]);
-        }
-
-        if (discussionsData.status === 'fulfilled') {
-          setDiscussions(discussionsData.value);
-        } else {
-          console.error('Discussions data failed, using fallback:', discussionsData.reason);
-          // Fallback mock discussions
-          setDiscussions([
-            {
-              id: 1,
-              number: 123,
-              title: 'Discussion: API Rate Limiting Strategy',
-              body: 'We need to discuss the best approach for handling API rate limits in production...',
-              created_at: '2024-12-01T10:00:00Z',
-              updated_at: '2024-12-02T15:30:00Z',
-              comments: 8,
-              html_url: 'https://github.com/agntcy/dir/issues/123'
-            },
-            {
-              id: 2,
-              number: 124,
-              title: 'Feature Request: Enhanced Dashboard Analytics',
-              body: 'It would be great to have more detailed analytics on the dashboard...',
-              created_at: '2024-12-02T09:15:00Z',
-              updated_at: '2024-12-03T11:45:00Z',
-              comments: 5,
-              html_url: 'https://github.com/agntcy/dir/issues/124'
-            }
-          ]);
-        }
-
-        if (repoData.status === 'fulfilled') {
-          setRepoStats({
-            stars: repoData.value.stars,
-            forks: repoData.value.forks,
-            name: repoData.value.name,
-            openIssues: repoData.value.open_issues_count,
-            downloads: repoData.value.downloads,
-            contributors: repoData.value.contributors,
-            newContributorsThisMonth: repoData.value.newContributorsThisMonth,
-            starsThisMonth: repoData.value.starsThisMonth,
-            forksThisMonth: repoData.value.forksThisMonth,
-            downloadsThisMonth: repoData.value.downloadsThisMonth
-          });
-        }
-
-        if (growthData.status === 'fulfilled') {
-          setContributorGrowth(growthData.value);
-        }
-
-        if (analyticsData.status === 'fulfilled') {
-          setDetailedAnalytics(analyticsData.value);
-          console.log("Setting detailed analytics:", analyticsData.value);
-        } else {
-          console.error('Analytics data failed, using fallback:', analyticsData.reason);
-          // Fallback mock data for retention rates
-          setDetailedAnalytics({
-            newContributorsPerMonth: [
-              { month: 'Jul', newContributors: 2 },
-              { month: 'Aug', newContributors: 3 },
-              { month: 'Sep', newContributors: 2 },
-              { month: 'Oct', newContributors: 1 },
-              { month: 'Nov', newContributors: 2 },
-              { month: 'Dec', newContributors: 1 }
-            ],
-            retentionRates: [
-              { month: 'Jul', retentionRate: 75 },
-              { month: 'Aug', retentionRate: 80 },
-              { month: 'Sep', retentionRate: 85 },
-              { month: 'Oct', retentionRate: 78 },
-              { month: 'Nov', retentionRate: 82 },
-              { month: 'Dec', retentionRate: 88 }
-            ],
-            mostActiveNewContributors: []
-          });
-        }
-
-        if (viralityDataFetch.status === 'fulfilled') {
-          setViralityData(viralityDataFetch.value);
-        }
-
-        if (adoptionData.status === 'fulfilled') {
-          // Only update if API returns meaningful data, otherwise keep mock data
-          const apiData = adoptionData.value;
-          if (apiData.downloadTrends && apiData.downloadTrends.length > 0 && apiData.downloadTrends[0].downloads > 0) {
-            setAdoptionMetrics(apiData);
-          }
-        }
-
-        if (devExperienceData.status === 'fulfilled') {
-          setDevExperienceMetrics(devExperienceData.value);
-        }
-
-        // Technical health indicators removed
+        
+        // Set all data from server response
+        if (data.milestones) setMilestones(data.milestones);
+        if (data.discussions) setDiscussions(data.discussions);
+        if (data.stars) setRepoStats(data.stars);
+        if (data.contributorGrowth) setContributorGrowth(data.contributorGrowth);
+        if (data.contributorAnalytics) setContributorAnalytics(data.contributorAnalytics);
+        if (data.dependents) setViralityData(data.dependents);
+        if (data.adoption) setAdoptionMetrics(data.adoption);
+        if (data.devExperience) setDeveloperExperience(data.devExperience);
+        
       } catch (error) {
-        console.error('Error in fetchData:', error);
-        setError('Failed to load data. Please check your connection and try again.');
-      } finally {
-        setLoading(false);
+        console.error('Error fetching data:', error);
+        setError('Failed to load data. Please try again later.');
+        
+        // Set fallback data
+        setMilestones([{
+          id: 1,
+          number: 1,
+          title: 'Core Infrastructure v1.0',
+          description: 'Complete core infrastructure setup',
+          state: 'closed',
+          open_issues: 0,
+          closed_issues: 12,
+          created_at: '2024-07-01T00:00:00Z',
+          updated_at: '2024-07-15T00:00:00Z',
+          due_on: '2024-07-15T00:00:00Z',
+          html_url: 'https://github.com/agntcy/dir/milestone/1',
+          repository: 'dir'
+        }]);
+        setDiscussions([{
+          id: 1,
+          number: 123,
+          title: 'Discussion: API Rate Limiting Strategy',
+          body: 'We need to discuss the best approach for handling API rate limits in production...',
+          created_at: '2024-12-01T10:00:00Z',
+          updated_at: '2024-12-02T15:30:00Z',
+          comments: 8,
+          html_url: 'https://github.com/agntcy/dir/issues/123'
+        }]);
+        setRepoStats({
+          stars: 0,
+          forks: 0,
+          name: 'dir',
+          open_issues_count: 0,
+          downloads: 0,
+          contributors: 0,
+          newContributorsThisMonth: 0,
+          starsThisMonth: 0,
+          forksThisMonth: 0,
+          downloadsThisMonth: 0
+        });
+        setContributorGrowth([]);
+        setDetailedAnalytics({
+          newContributorsPerMonth: [],
+          retentionRates: [],
+          mostActiveNewContributors: []
+        });
+        setViralityData({ dependents: 0, packages: [] });
+        setAdoptionMetrics({ adoptionRate: 0 });
+        setDeveloperExperience({ score: 0 });
       }
+      
+      setLoading(false);
     };
 
     fetchData();
