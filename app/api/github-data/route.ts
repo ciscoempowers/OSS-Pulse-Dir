@@ -15,14 +15,14 @@ export async function GET() {
     console.log('Fetching GitHub data on server side...');
     
     const results = await Promise.allSettled([
-      getAllMilestones('agntcy', 'dir'),
-      getDiscussions('agntcy', 'dir'),
-      getRepoStars('agntcy', 'dir'),
-      getContributorGrowth('agntcy', 'dir'),
-      getDetailedContributorAnalytics('agntcy', 'dir'),
-      getGitHubDependents('agntcy', 'dir'),
-      getAdoptionMetrics('agntcy', 'dir'),
-      getDeveloperExperienceMetrics('agntcy', 'dir'),
+      getAllMilestones(),
+      getDiscussions(),
+      getRepoStars('dir'),
+      getContributorGrowth('dir'),
+      getDetailedContributorAnalytics('dir'),
+      getGitHubDependents('dir'),
+      getAdoptionMetrics('dir'),
+      getDeveloperExperienceMetrics('dir'),
     ]);
 
     const data = {
