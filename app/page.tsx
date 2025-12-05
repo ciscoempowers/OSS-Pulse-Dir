@@ -559,7 +559,8 @@ export default function Dashboard() {
       return;
     }
     
-    let currentStepIndex = 0;
+    let currentStepIndex = workflow.currentStepIndex || 0;
+    console.log(`Starting from step index: ${currentStepIndex}`);
     
     const executeNextStep = () => {
       console.log(`Executing step ${currentStepIndex + 1}/${workflow.steps.length} for ${workflow.agentName}`);
