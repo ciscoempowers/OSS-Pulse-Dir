@@ -509,8 +509,12 @@ export default function Dashboard() {
   };
 
   const startAgentSimulation = (agentId: string) => {
+    console.log(`startAgentSimulation called with agentId: ${agentId}`);
     const agent = agents.find(a => a.id === agentId);
-    if (!agent) return;
+    if (!agent) {
+      console.log(`Agent not found for ID: ${agentId}`);
+      return;
+    }
 
     console.log(`Starting simulation for ${agent.name} (${agentId})`);
     
@@ -1877,7 +1881,10 @@ export default function Dashboard() {
                     {selectedWorkflow?.agentId === agent.id ? 'Hide Details' : 'View Details'}
                   </button>
                   <button
-                    onClick={() => startAgentSimulation(agent.id)}
+                    onClick={() => {
+                    console.log(`Button clicked for agent: ${agent.name} (${agent.id})`);
+                    startAgentSimulation(agent.id);
+                  }}
                     disabled={agent.status !== 'idle'}
                     className={`flex-1 px-3 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 ${
                       agent.status === 'idle' 
@@ -2128,8 +2135,14 @@ export default function Dashboard() {
               </button>
               <button
                 onClick={() => {
+                  console.log('Restart workflow button clicked');
                   const agent = agents.find(a => a.id === selectedWorkflow.agentId);
-                  if (agent) startAgentSimulation(agent.id);
+                  if (agent) {
+                    console.log(`Restarting simulation for agent: ${agent.name} (${agent.id})`);
+                    startAgentSimulation(agent.id);
+                  } else {
+                    console.log('No agent found for selected workflow');
+                  }
                 }}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
