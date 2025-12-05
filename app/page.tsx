@@ -1150,10 +1150,10 @@ export default function Dashboard() {
           </h1>
           <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
             Real-time insights into project health, community engagement, and technical excellence
-          <p className="text-gray-500 text-sm max-w-3xl mx-auto leading-relaxed mt-2">
+          </p>
+          <div className="text-gray-500 text-sm max-w-3xl mx-auto leading-relaxed mt-2">
             data srcs: agntcy GH repos - dir, dir-spec, oasf-sdk
-          </p>
-          </p>
+          </div>
         </header>
 
       {/* Community Engagement Header */}

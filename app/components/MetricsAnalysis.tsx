@@ -438,7 +438,9 @@ const MetricsAnalysis: React.FC<MetricsAnalysisProps> = ({ stars, forks, contrib
                   </div>
                   
                   <div className="flex items-baseline justify-between mb-2">
-                    <span className="text-2xl font-bold text-gray-900">{metric.value.toLocaleString()}</span>
+                    <span className="text-2xl font-bold text-gray-900">
+                      {metric.value !== undefined ? metric.value.toLocaleString() : '0'}
+                    </span>
                     <span className="text-sm text-gray-500">
                       {analysis.trend === 'up' ? '+' : ''}{analysis.trendPercentage}%
                     </span>
