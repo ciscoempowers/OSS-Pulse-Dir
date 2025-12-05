@@ -68,6 +68,7 @@ const COLORS = {
 };
 
 export default function MetricsPanel({ className = "" }: MetricsPanelProps) {
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [metrics, setMetrics] = useState<SimulationMetrics>({
     totalSimulations: 0,
     averageCompletionTime: 0,
@@ -212,7 +213,12 @@ export default function MetricsPanel({ className = "" }: MetricsPanelProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
-          <BarChart3 className="w-6 h-6 text-gray-600" />
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-1 text-gray-500 hover:text-gray-700 rounded hover:bg-gray-100 transition-colors"
+          >
+            <BarChart3 className={`w-6 h-6 transition-transform duration-200 ${isCollapsed ? 'rotate-0' : 'rotate-90'}`} />
+          </button>
           <h3 className="text-xl font-semibold text-gray-900">Agent Performance Metrics</h3>
         </div>
         <div className="flex items-center space-x-2">
@@ -233,8 +239,12 @@ export default function MetricsPanel({ className = "" }: MetricsPanelProps) {
         </div>
       </div>
 
-      {/* Real-time Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      {/* Collapsible Content */}
+      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+        isCollapsed ? 'max-h-0 opacity-0' : 'max-h-none opacity-100'
+      }`}>
+        {/* Real-time Metrics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center justify-between mb-2">
             <TrendingUp className="w-5 h-5 text-blue-600" />
@@ -398,6 +408,7 @@ export default function MetricsPanel({ className = "" }: MetricsPanelProps) {
             <span>Data Points: {metrics.hourlyData.length + metrics.stepDistribution.length + metrics.agentPerformance.length}</span>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

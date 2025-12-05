@@ -23,6 +23,7 @@ export default function DemoControls({
   isRunningAllScenarios,
   className = ""
 }: DemoControlsProps) {
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const currentScenario = selectedScenario ? getScenarioById(selectedScenario) : null;
@@ -52,7 +53,12 @@ export default function DemoControls({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
-          <Settings className="w-6 h-6 text-gray-600" />
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-1 text-gray-500 hover:text-gray-700 rounded hover:bg-gray-100 transition-colors"
+          >
+            <Settings className={`w-6 h-6 transition-transform duration-200 ${isCollapsed ? 'rotate-0' : 'rotate-90'}`} />
+          </button>
           <h3 className="text-xl font-semibold text-gray-900">Demo Mode</h3>
           <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
             PRESET SCENARIOS
@@ -66,8 +72,12 @@ export default function DemoControls({
         </button>
       </div>
 
-      {/* Scenario Selector */}
-      <div className="mb-6">
+      {/* Collapsible Content */}
+      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+        isCollapsed ? 'max-h-0 opacity-0' : 'max-h-none opacity-100'
+      }`}>
+        {/* Scenario Selector */}
+        <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Select Scenario
         </label>
@@ -262,6 +272,7 @@ export default function DemoControls({
             );
           })}
         </div>
+      </div>
       </div>
     </div>
   );

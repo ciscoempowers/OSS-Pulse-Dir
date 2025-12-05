@@ -1898,16 +1898,6 @@ export default function Dashboard() {
           {/* Main Content Area */}
           <div className="lg:col-span-3 space-y-6">
 
-        {/* Demo Controls */}
-        <DemoControls
-          onScenarioSelect={handleScenarioSelect}
-          onAutoPilotToggle={handleAutoPilotToggle}
-          onRunAllScenarios={handleRunAllScenarios}
-          selectedScenario={selectedScenario}
-          autoPilot={autoPilot}
-          isRunningAllScenarios={isRunningAllScenarios}
-        />
-
         {/* Simulation Controls */}
         <Card className="mb-8">
           <div className="flex items-center justify-between">
@@ -2301,6 +2291,18 @@ export default function Dashboard() {
               className="sticky top-4"
             />
           </div>
+        </div>
+
+        {/* Demo Controls */}
+        <div className="mt-8">
+          <DemoControls
+            onScenarioSelect={handleScenarioSelect}
+            onAutoPilotToggle={handleAutoPilotToggle}
+            onRunAllScenarios={handleRunAllScenarios}
+            selectedScenario={selectedScenario}
+            autoPilot={autoPilot}
+            isRunningAllScenarios={isRunningAllScenarios}
+          />
         </div>
 
         {/* Metrics Panel */}

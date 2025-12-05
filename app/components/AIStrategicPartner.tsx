@@ -182,14 +182,14 @@ export default function AIStrategicPartner() {
 
   const handlePromptClick = (prompt: Prompt) => {
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       type: 'user',
       content: prompt.text,
       timestamp: new Date().toLocaleTimeString()
     };
 
     const aiMessage: Message = {
-      id: (Date.now() + 1).toString(),
+      id: crypto.randomUUID(),
       type: 'ai',
       content: aiResponses[prompt.category] || 'I\'m analyzing your request and preparing personalized recommendations...',
       timestamp: new Date().toLocaleTimeString()
@@ -202,14 +202,14 @@ export default function AIStrategicPartner() {
     if (!inputValue.trim()) return;
 
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       type: 'user',
       content: inputValue,
       timestamp: new Date().toLocaleTimeString()
     };
 
     const aiMessage: Message = {
-      id: (Date.now() + 1).toString(),
+      id: crypto.randomUUID(),
       type: 'ai',
       content: `🤖 **Analyzing your request:** "${inputValue}"
 
