@@ -552,6 +552,7 @@ export default function Dashboard() {
 
   const executeWorkflowSteps = (workflow: WorkflowExecution) => {
     console.log(`executeWorkflowSteps called for ${workflow.agentName} with ${workflow.steps.length} steps`);
+    console.log(`Current simulation speed: ${simulationSpeed}x`);
     
     if (!workflow.steps || workflow.steps.length === 0) {
       console.error(`No steps found for workflow ${workflow.agentName}`);
@@ -590,10 +591,13 @@ export default function Dashboard() {
           setSelectedWorkflow(updatedWorkflow);
           
           // Auto-approve after 2 seconds for demo purposes (happy path)
+          const approvalDelay = 2000 / simulationSpeed;
+          console.log(`Scheduling auto-approval for ${step.name} in ${approvalDelay}ms`);
           setTimeout(() => {
             console.log(`Auto-approving step: ${step.name} for ${workflow.agentName}`);
+            console.log(`Workflow ID: ${workflow.id}, Step ID: ${step.id}`);
             handleApproval(workflow.id, step.id, 'approve');
-          }, 2000 / simulationSpeed);
+          }, approvalDelay);
         } else {
           processedStep.status = 'completed';
           updatedWorkflow.steps[currentStepIndex] = processedStep;
