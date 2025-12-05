@@ -15,7 +15,7 @@ import DemoControls from '../components/agents/DemoControls';
 import { demoScenarios, getScenarioById, runAutoPilotScenario, calculateScenarioMetrics } from '../lib/agents/demoScenarios';
 import { AGENT_COLORS, ANIMATIONS, getAgentColors, getStatusColors } from '../lib/agents/theme';
 
-// Agent interfaces
+// Agent simulation debugging fixes deployed - Vercel deployment trigger
 interface Agent {
   id: string;
   name: string;
