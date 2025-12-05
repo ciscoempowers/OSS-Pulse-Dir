@@ -541,12 +541,16 @@ export default function Dashboard() {
     let currentStepIndex = 0;
     
     const executeNextStep = () => {
+      console.log(`Executing step ${currentStepIndex + 1}/${workflow.steps.length} for ${workflow.agentName}`);
+      
       if (currentStepIndex >= workflow.steps.length) {
+        console.log(`Workflow completed for ${workflow.agentName}`);
         completeWorkflow(workflow);
         return;
       }
 
       const step = workflow.steps[currentStepIndex];
+      console.log(`Starting step: ${step.name} (${step.type})`);
       const updatedWorkflow = { ...workflow };
       updatedWorkflow.currentStepIndex = currentStepIndex;
       updatedWorkflow.steps = [...workflow.steps];
@@ -564,6 +568,12 @@ export default function Dashboard() {
           processedStep.status = 'waiting_approval';
           updatedWorkflow.steps[currentStepIndex] = processedStep;
           setSelectedWorkflow(updatedWorkflow);
+          
+          // Auto-approve after 2 seconds for demo purposes (happy path)
+          setTimeout(() => {
+            console.log(`Auto-approving step: ${step.name} for ${workflow.agentName}`);
+            handleApproval(workflow.id, step.id, 'approve');
+          }, 2000 / simulationSpeed);
         } else {
           processedStep.status = 'completed';
           updatedWorkflow.steps[currentStepIndex] = processedStep;
@@ -618,8 +628,12 @@ export default function Dashboard() {
   };
 
   const handleApproval = (workflowId: string, stepId: string, action: string) => {
+    console.log(`handleApproval called: workflowId=${workflowId}, stepId=${stepId}, action=${action}`);
     const workflow = selectedWorkflow;
-    if (!workflow || workflow.id !== workflowId) return;
+    if (!workflow || workflow.id !== workflowId) {
+      console.log('Workflow not found or ID mismatch');
+      return;
+    }
 
     const stepIndex = workflow.steps.findIndex(s => s.id === stepId);
     if (stepIndex === -1) return;
@@ -637,6 +651,7 @@ export default function Dashboard() {
 
     // Continue with next step
     setTimeout(() => {
+      console.log(`Continuing workflow after approval. Next step index: ${stepIndex + 1}`);
       const nextWorkflow = { ...updatedWorkflow, currentStepIndex: stepIndex + 1 };
       executeWorkflowSteps(nextWorkflow);
     }, 1000 / simulationSpeed);
