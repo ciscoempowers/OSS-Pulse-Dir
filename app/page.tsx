@@ -271,6 +271,7 @@ export default function Dashboard() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<WorkflowExecution | null>(null);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
   const [activeWorkflows, setActiveWorkflows] = useState<any[]>([]);
+  const [events, setEvents] = useState<any[]>([]);
     
   // Demo mode state
   const [demoMode, setDemoMode] = useState(false);
@@ -327,6 +328,13 @@ export default function Dashboard() {
 
   const stopSimulation = () => {
     setIsSimulationRunning(false);
+  };
+
+  const resetSimulation = () => {
+    setIsSimulationRunning(false);
+    setSimulationSpeed(1);
+    setActiveWorkflows([]);
+    setAgents(agents.map(agent => ({ ...agent, status: 'idle', progress: 0 })));
   };
 
   const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
@@ -493,7 +501,13 @@ export default function Dashboard() {
             { id: 'modify', label: 'Modify Labels', description: 'Adjust before applying', action: 'modify' },
             { id: 'manual', label: 'Manual Assignment', description: 'Handle manually', action: 'reject' }
           ]
-        },
+        }
+      ];
+    }
+  };
+
+  const startAgentSimulation = (agentId: string) => {
+    const agent = agents.find(a => a.id === agentId);
     if (!agent) return;
 
     // Create workflow execution
@@ -735,35 +749,6 @@ export default function Dashboard() {
     }
   };
 
-  const resetSimulation = () => {
-    setIsSimulationRunning(false);
-    setSimulationSpeed(1);
-    setActiveWorkflows([]);
-    setAgents(agents.map(agent => ({ ...agent, status: 'idle', progress: 0 })));
-  };
-
-  const startAgentSimulation = (agentId: string) => {
-    const agent = agents.find(a => a.id === agentId);
-    if (!agent) return;
-
-    // Create workflow execution
-    const workflowExecution: WorkflowExecution = {
-      id: `workflow-${Date.now()}`,
-      agentId,
-      agentName: agent.name,
-      status: 'running',
-      currentStepIndex: 0,
-      startTime: new Date(),
-      steps: getWorkflowSteps(agentId),
-      contributor: { username: 'johndoe', experience: 'intermediate', interests: ['frontend', 'documentation'] }
-    };
-
-    setSelectedWorkflow(workflowExecution);
-    setAgents(prev => prev.map(a => 
-      a.id === agentId ? { ...a, status: 'running', progress: 0 } : a
-    ));
-  };
-
   const executeWorkflowSteps = (workflow: WorkflowExecution) => {
     let currentStepIndex = 0;
     
@@ -802,6 +787,35 @@ export default function Dashboard() {
     };
     
     executeNextStep();
+  };
+
+  const resetSimulation = () => {
+    setIsSimulationRunning(false);
+    setSimulationSpeed(1);
+    setActiveWorkflows([]);
+    setAgents(agents.map(agent => ({ ...agent, status: 'idle', progress: 0 })));
+  };
+
+  const startAgentSimulation = (agentId: string) => {
+    const agent = agents.find(a => a.id === agentId);
+    if (!agent) return;
+
+    // Create workflow execution
+    const workflowExecution: WorkflowExecution = {
+      id: `workflow-${Date.now()}`,
+      agentId,
+      agentName: agent.name,
+      status: 'running',
+      currentStepIndex: 0,
+      startTime: new Date(),
+      steps: getWorkflowSteps(agentId),
+      contributor: { username: 'johndoe', experience: 'intermediate', interests: ['frontend', 'documentation'] }
+    };
+
+    setSelectedWorkflow(workflowExecution);
+    setAgents(prev => prev.map(a => 
+      a.id === agentId ? { ...a, status: 'running', progress: 0 } : a
+    ));
   };
 
   const generateSimulatedData = (step: WorkflowStep) => {
