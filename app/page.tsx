@@ -596,7 +596,7 @@ export default function Dashboard() {
           setTimeout(() => {
             console.log(`Auto-approving step: ${step.name} for ${workflow.agentName}`);
             console.log(`Workflow ID: ${workflow.id}, Step ID: ${step.id}`);
-            handleApproval(workflow.id, step.id, 'approve');
+            handleApproval(workflow.id, step.id, 'approve', workflow);
           }, approvalDelay);
         } else {
           processedStep.status = 'completed';
@@ -651,11 +651,13 @@ export default function Dashboard() {
     }
   };
 
-  const handleApproval = (workflowId: string, stepId: string, action: string) => {
+  const handleApproval = (workflowId: string, stepId: string, action: string, currentWorkflow?: WorkflowExecution) => {
     console.log(`handleApproval called: workflowId=${workflowId}, stepId=${stepId}, action=${action}`);
-    const workflow = selectedWorkflow;
+    const workflow = currentWorkflow || selectedWorkflow;
     if (!workflow || workflow.id !== workflowId) {
       console.log('Workflow not found or ID mismatch');
+      console.log(`Looking for workflow ID: ${workflowId}`);
+      console.log(`Current workflow ID: ${workflow?.id || 'none'}`);
       return;
     }
 
