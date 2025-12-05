@@ -327,8 +327,9 @@ export default function Dashboard() {
 
   const stopSimulation = () => {
     setIsSimulationRunning(false);
+  };
 
-const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
+  const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
   const agent = agents.find(a => a.id === agentId);
   if (!agent) return [];
 
@@ -515,11 +516,10 @@ const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
     
     setAgents(prev => prev.map(a => 
       a.id === agentId 
-        ? { ...a, status: 'running', progress: 0, lastRun: new Date() }
+        ? { ...a, status: 'running', progress: 0 } 
         : a
     ));
     
-    addEvent('agent_started', `${agent.name} started`, agentId, { contributor: workflowExecution.contributor.username });
     executeWorkflowSteps(workflowExecution);
   };
 
@@ -735,6 +735,35 @@ const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
     }
   };
 
+  const resetSimulation = () => {
+    setIsSimulationRunning(false);
+    setSimulationSpeed(1);
+    setActiveWorkflows([]);
+    setAgents(agents.map(agent => ({ ...agent, status: 'idle', progress: 0 })));
+  };
+
+  const startAgentSimulation = (agentId: string) => {
+    const agent = agents.find(a => a.id === agentId);
+    if (!agent) return;
+
+    // Create workflow execution
+    const workflowExecution: WorkflowExecution = {
+      id: `workflow-${Date.now()}`,
+      agentId,
+      agentName: agent.name,
+      status: 'running',
+      currentStepIndex: 0,
+      startTime: new Date(),
+      steps: getWorkflowSteps(agentId),
+      contributor: { username: 'johndoe', experience: 'intermediate', interests: ['frontend', 'documentation'] }
+    };
+
+    setSelectedWorkflow(workflowExecution);
+    setAgents(prev => prev.map(a => 
+      a.id === agentId ? { ...a, status: 'running', progress: 0 } : a
+    ));
+  };
+
   const executeWorkflowSteps = (workflow: WorkflowExecution) => {
     let currentStepIndex = 0;
     
@@ -751,11 +780,6 @@ const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
       updatedWorkflow.steps[currentStepIndex] = { ...step, status: 'running', startTime: new Date() };
       
       setSelectedWorkflow(updatedWorkflow);
-      addEvent('step_started', `${step.name} started`, workflow.agentId, { 
-        stepName: step.name, 
-        stepId: step.id,
-        workflowId: workflow.id 
-      });
       
       // Simulate step execution
       setTimeout(() => {
@@ -767,22 +791,10 @@ const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
           processedStep.status = 'waiting_approval';
           updatedWorkflow.steps[currentStepIndex] = processedStep;
           setSelectedWorkflow(updatedWorkflow);
-          addEvent('approval_requested', `Approval required for ${step.name}`, workflow.agentId, { 
-            stepName: step.name, 
-            stepId: step.id,
-            workflowId: workflow.id,
-            contributor: workflow.contributor.username
-          });
         } else {
           processedStep.status = 'completed';
           updatedWorkflow.steps[currentStepIndex] = processedStep;
           setSelectedWorkflow(updatedWorkflow);
-          addEvent('step_completed', `${step.name} completed`, workflow.agentId, { 
-            stepName: step.name, 
-            stepId: step.id,
-            workflowId: workflow.id,
-            duration: processedStep.executionTime
-          });
           currentStepIndex++;
           setTimeout(executeNextStep, 1000 / simulationSpeed);
         }
@@ -849,12 +861,6 @@ const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
     };
 
     setSelectedWorkflow(updatedWorkflow);
-    addEvent('approval_completed', `Step ${workflow.steps[stepIndex].name} ${action}d`, workflow.agentId, { 
-      stepName: workflow.steps[stepIndex].name, 
-      stepId: workflow.steps[stepIndex].id,
-      workflowId: workflow.id,
-      action
-    });
 
     // Continue with next step
     setTimeout(() => {
@@ -888,18 +894,15 @@ const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
           ? { ...agent, contributor: scenario.contributor }
           : agent
       ));
-      addEvent('agent_started', `Demo scenario selected: ${scenario.name}`, agentId, { scenarioId });
     }
   };
 
   const handleAutoPilotToggle = (enabled: boolean) => {
     setAutoPilot(enabled);
-    addEvent('agent_started', `Auto-pilot ${enabled ? 'enabled' : 'disabled'}`, 'system', { autoPilot: enabled });
   };
 
   const handleRunAllScenarios = async () => {
     setIsRunningAllScenarios(true);
-    addEvent('agent_started', 'Running all demo scenarios', 'system');
     
     for (const scenario of demoScenarios) {
       setSelectedScenario(scenario.id);
@@ -915,7 +918,6 @@ const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
     }
     
     setIsRunningAllScenarios(false);
-    addEvent('workflow_completed', 'All demo scenarios completed', 'system');
   };
 
   const runDemoScenario = (scenarioId: string) => {
