@@ -277,7 +277,7 @@ const MetricsAnalysis: React.FC<MetricsAnalysisProps> = ({ stars, forks, contrib
     recommendations: {
       quickWins: current < 40 ? [
         'Simplify issue reporting with templates',
-        'Create "bug report" and "feature request' guides',
+        'Create "bug report" and "feature request" guides',
         'Respond to all issues within 24 hours'
       ] : [
         'Implement issue triage automation',

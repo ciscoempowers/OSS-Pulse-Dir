@@ -235,7 +235,7 @@ export default function Dashboard() {
   const [discussions, setDiscussions] = useState<GitHubDiscussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [repoStats, setRepoStats] = useState({ stars: 0, forks: 0, name: '', openIssues: 0, downloads: 0, contributors: 0, newContributorsThisMonth: 0, starsThisMonth: 0, forksThisMonth: 0, downloadsThisMonth: 0 });
+  const [repoStats, setRepoStats] = useState({ stars: 0, forks: 0, name: '', openIssues: 0, downloads: 0, contributors: 0, pullRequests: 0, newContributorsThisMonth: 0, starsThisMonth: 0, forksThisMonth: 0, downloadsThisMonth: 0 });
 
   // Workflow step interfaces
   interface WorkflowStep {
@@ -1068,6 +1068,7 @@ export default function Dashboard() {
           openIssues: 0,
           downloads: 0,
           contributors: 0,
+          pullRequests: 45,
           newContributorsThisMonth: 0,
           starsThisMonth: 0,
           forksThisMonth: 0,
