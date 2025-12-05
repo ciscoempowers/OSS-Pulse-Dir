@@ -535,6 +535,8 @@ export default function Dashboard() {
         ? { ...a, status: 'running', progress: 0 } 
         : a
     ));
+    
+    executeWorkflowSteps(workflowExecution);
   };
 
   const executeWorkflowSteps = (workflow: WorkflowExecution) => {
