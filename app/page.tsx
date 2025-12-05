@@ -1568,12 +1568,12 @@ export default function Dashboard() {
           
           {/* Right: Compact Metrics Analysis */}
           <div className="lg:col-span-1">
-            <MetricsAnalysisCompact 
-              stars={repoStats.stars}
-              forks={repoStats.forks}
-              contributors={repoStats.contributors}
-              downloads={repoStats.downloads}
-            />
+            <Card>
+              <div className="p-4">
+                <h3 className="text-sm font-semibold text-gray-900">Metrics Analysis</h3>
+                <p className="text-xs text-gray-500">Temporarily disabled</p>
+              </div>
+            </Card>
           </div>
         </div>
       </div>
