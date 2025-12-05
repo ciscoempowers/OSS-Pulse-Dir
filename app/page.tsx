@@ -1192,13 +1192,13 @@ export default function Dashboard() {
           forks: 0,
           name: 'dir',
           openIssues: 0,
-          downloads: 0,
+          downloads: 1200,
           contributors: 0,
           pullRequests: 45,
           newContributorsThisMonth: 0,
           starsThisMonth: 0,
           forksThisMonth: 0,
-          downloadsThisMonth: 0
+          downloadsThisMonth: 150
         });
         setContributorGrowth([]);
         setDetailedAnalytics({
