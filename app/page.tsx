@@ -11,8 +11,6 @@ import AIStrategicPartner from './components/AIStrategicPartner';
 import { Activity, Play, Square, RotateCcw, Users, GitBranch, Brain, Loader2, CheckCircle, Clock, User, Bot, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 import HumanApprovalCard, { mockApprovalData } from '../components/agents/HumanApprovalCard';
 import MetricsPanel from '../components/agents/MetricsPanel';
-import DemoControls from '../components/agents/DemoControls';
-import { demoScenarios, getScenarioById, runAutoPilotScenario, calculateScenarioMetrics } from '../lib/agents/demoScenarios';
 import { AGENT_COLORS, ANIMATIONS, getAgentColors, getStatusColors } from '../lib/agents/theme';
 import MetricsAnalysisCompact from './components/MetricsAnalysisCompact';
 
@@ -274,13 +272,21 @@ export default function Dashboard() {
   const [activeWorkflows, setActiveWorkflows] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
     
-  // Demo mode state
-  const [demoMode, setDemoMode] = useState(false);
-  const [selectedScenario, setSelectedScenario] = useState<string>('');
-  const [autoPilot, setAutoPilot] = useState(false);
-  const [isRunningAllScenarios, setIsRunningAllScenarios] = useState(false);
-
+  
   const [agents, setAgents] = useState<Agent[]>([
+    {
+      id: 'integration-agent',
+      name: 'New Developer Onboarding',
+      type: 'contribution',
+      status: 'idle',
+      description: 'Onboards new developers with custom video tutorials and environment setup',
+      progress: 0,
+      metrics: {
+        totalWorkflows: 8,
+        successRate: 87.5,
+        averageCompletionTime: 6.8
+      }
+    },
     {
       id: 'welcome-agent',
       name: 'New Contributor Onboarding',
@@ -295,24 +301,11 @@ export default function Dashboard() {
       }
     },
     {
-      id: 'integration-agent',
-      name: 'Integration Assistant',
-      type: 'contribution',
-      status: 'idle',
-      description: 'Helps developers integrate the directory into their projects',
-      progress: 0,
-      metrics: {
-        totalWorkflows: 8,
-        successRate: 87.5,
-        averageCompletionTime: 6.8
-      }
-    },
-    {
       id: 'community-agent',
       name: 'Community Growth',
       type: 'triage',
       status: 'idle',
-      description: 'Fosters ecosystem growth and tracks community contributions',
+      description: 'Analyzes contribution and developer growth patterns across the directory ecosystem',
       progress: 0,
       metrics: {
         totalWorkflows: 15,
@@ -363,19 +356,23 @@ export default function Dashboard() {
         },
         {
           id: 'welcome-3',
-          name: 'Generate Environment Setup Guide',
-          description: 'Create personalized development environment setup checklist',
+          name: 'First Contribution Assignment',
+          description: 'Assign appropriate first contribution based on skills and interests',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'welcome-4',
-          name: 'Create Contributor Profile',
-          description: 'Create comprehensive profile using GitHub and LinkedIn data',
-          type: 'data_collection',
+          name: 'Contribution Recognition & Badging',
+          description: 'Award contribution maturity badges and recognize achievements',
+          type: 'human_approval',
           status: 'pending',
-          approvalOptions: []
+          approvalOptions: [
+            { id: 'approve', label: 'Award Badge', description: 'Grant recognition badge', action: 'approve' },
+            { id: 'defer', label: 'Defer Recognition', description: 'Wait for more contributions', action: 'skip' },
+            { id: 'upgrade', label: 'Upgrade Badge', description: 'Award higher level badge', action: 'modify' }
+          ]
         },
         {
           id: 'welcome-5',
@@ -387,17 +384,25 @@ export default function Dashboard() {
         },
         {
           id: 'welcome-6',
-          name: 'Curate Learning Resources',
-          description: 'Send personalized learning materials and documentation',
-          type: 'automated',
+          name: 'Contributor Growth Tracking',
+          description: 'Track contributor progress and suggest next steps',
+          type: 'data_collection',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'welcome-7',
-          name: 'Setup Verification Check',
-          description: 'Verify development environment is properly configured',
-          type: 'data_collection',
+          name: 'Community Integration',
+          description: 'Integrate contributor into community channels and discussions',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'welcome-8',
+          name: 'Onboarding Completion',
+          description: 'Complete onboarding and transition to active contributor status',
+          type: 'automated',
           status: 'pending',
           approvalOptions: []
         }
@@ -406,14 +411,30 @@ export default function Dashboard() {
       return [
         {
           id: 'integration-1',
-          name: 'Project Structure Analysis',
-          description: 'Analyze existing project structure and identify integration points',
+          name: 'Developer Profile Analysis',
+          description: 'Analyze developer profile from GitHub and LinkedIn for personalized onboarding',
           type: 'data_collection',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'integration-2',
+          name: 'Environment Setup Assessment',
+          description: 'Assess current development environment and setup requirements',
+          type: 'data_collection',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'integration-3',
+          name: 'Custom Video Tutorial Generation',
+          description: 'Generate personalized video tutorial based on environment setup and developer profile',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'integration-4',
           name: 'Integration Recommendations',
           description: 'Review and approve recommended integration approach for the project',
           type: 'human_approval',
@@ -425,7 +446,7 @@ export default function Dashboard() {
           ]
         },
         {
-          id: 'integration-3',
+          id: 'integration-5',
           name: 'Automated Setup Script Generation',
           description: 'Generate automated setup scripts for the directory integration',
           type: 'automated',
@@ -433,31 +454,23 @@ export default function Dashboard() {
           approvalOptions: []
         },
         {
-          id: 'integration-4',
-          name: 'Dependency Management Setup',
-          description: 'Configure package management and dependency resolution',
-          type: 'automated',
-          status: 'pending',
-          approvalOptions: []
-        },
-        {
-          id: 'integration-5',
-          name: 'Compatibility Checks',
-          description: 'Verify compatibility with existing systems and dependencies',
-          type: 'data_collection',
-          status: 'pending',
-          approvalOptions: []
-        },
-        {
           id: 'integration-6',
-          name: 'Custom Configuration Wizard',
-          description: 'Guide through custom configuration options and settings',
+          name: 'Weekly WG Digest Preparation',
+          description: 'Prepare weekly working group notification with new developer profiles and integration statuses',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'integration-7',
+          name: 'Target Follow-up Recommendations',
+          description: 'Generate persona-based follow-up recommendations for working group members',
+          type: 'data_collection',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'integration-8',
           name: 'Integration Validation',
           description: 'Validate successful integration and run compatibility tests',
           type: 'human_approval',
@@ -517,6 +530,22 @@ export default function Dashboard() {
         },
         {
           id: 'community-6',
+          name: 'Contributor Blocker Detection',
+          description: 'Detect patterns of blockers for contributors and developers based on behavioral data',
+          type: 'data_collection',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'community-7',
+          name: 'Weekly Blocker Analysis Report',
+          description: 'Send weekly blocker analysis to working group in Slack with recommendations',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'community-8',
           name: 'Knowledge Sharing Recommendations',
           description: 'Recommend knowledge sharing opportunities and community initiatives',
           type: 'automated',
@@ -524,7 +553,7 @@ export default function Dashboard() {
           approvalOptions: []
         },
         {
-          id: 'community-7',
+          id: 'community-9',
           name: 'Ecosystem Health Report',
           description: 'Generate comprehensive ecosystem health and growth report',
           type: 'human_approval',
@@ -660,12 +689,19 @@ export default function Dashboard() {
           message: 'Welcome johndoe! We noticed your experience with TypeScript. Here are some great first issues...',
           personalization_score: 0.9
         };
+      case 'welcome-3':
+        return {
+          assigned_issue: 'Add TypeScript types for new API endpoints',
+          difficulty_level: 'beginner',
+          estimated_time: '2-3 hours',
+          mentor_assigned: 'alice'
+        };
       case 'welcome-4':
         return {
-          github_profile: 'github.com/johndoe',
-          linkedin_profile: 'linkedin.com/in/johndoe',
-          skills: ['TypeScript', 'React', 'Node.js'],
-          contributions: 15
+          badge_awarded: 'First Contribution',
+          badge_level: 'bronze',
+          contribution_count: 1,
+          recognition_message: 'Congratulations on your first contribution!'
         };
       case 'welcome-5':
         return {
@@ -673,8 +709,27 @@ export default function Dashboard() {
           wg_members_notified: 12,
           weekly_digest_scheduled: true
         };
-      
-      // Integration Assistant
+      case 'welcome-6':
+        return {
+          progress_score: 0.75,
+          next_suggested_contribution: 'Improve documentation',
+          skill_development: ['API design', 'TypeScript']
+        };
+      case 'welcome-7':
+        return {
+          channels_joined: ['discord-general', 'github-discussions'],
+          community_score: 0.8,
+          integration_complete: true
+        };
+      case 'welcome-8':
+        return {
+          onboarding_status: 'completed',
+          contributor_level: 'active',
+          total_contributions: 3,
+          next_milestone: 'regular contributor'
+        };
+            
+      // New Developer Onboarding
       case 'integration-1':
         return {
           project_type: 'React Application',
@@ -684,6 +739,23 @@ export default function Dashboard() {
         };
       case 'integration-2':
         return {
+          environment_status: 'partially_configured',
+          setup_requirements: ['Node.js 18+', 'npm 8+', 'TypeScript 5+'],
+          profile_analysis: {
+            experience_level: 'intermediate',
+            preferred_frameworks: ['React', 'Next.js'],
+            learning_style: 'visual'
+          }
+        };
+      case 'integration-3':
+        return {
+          video_generated: true,
+          video_length: '12 minutes',
+          content_topics: ['environment setup', 'first integration', 'common pitfalls'],
+          personalization_score: 0.92
+        };
+      case 'integration-4':
+        return {
           recommended_approach: 'npm package integration',
           compatibility_score: 0.95,
           setup_time: '30 minutes',
@@ -691,14 +763,32 @@ export default function Dashboard() {
         };
       case 'integration-5':
         return {
-          compatibility_results: {
-            node_version: 'compatible',
-            dependencies: 'no_conflicts',
-            api_versions: 'compatible'
+          scripts_generated: ['setup.sh', 'validate.js', 'example.js'],
+          automation_level: 'high',
+          custom_configurations: 3
+        };
+      case 'integration-6':
+        return {
+          digest_prepared: true,
+          new_developers: 5,
+          integration_statuses: {
+            completed: 3,
+            in_progress: 2,
+            blocked: 0
           },
-          risk_level: 'low'
+          follow_up_recommendations: 8
         };
       case 'integration-7':
+        return {
+          behavioral_patterns: {
+            completion_rate: 0.85,
+            preferred_contact: 'email',
+            active_hours: '9-17 UTC',
+            skill_gaps: ['advanced TypeScript']
+          },
+          follow_up_actions: ['advanced tutorial', 'mentor pairing', 'office hours invite']
+        };
+      case 'integration-8':
         return {
           validation_passed: true,
           test_results: {
@@ -747,7 +837,43 @@ export default function Dashboard() {
           },
           growth_opportunities: ['documentation', 'examples', 'plugins']
         };
+      case 'community-6':
+        return {
+          blocker_patterns: {
+            setup_issues: 0.35,
+            documentation_gaps: 0.28,
+            api_complexity: 0.22,
+            tooling_barriers: 0.15
+          },
+          affected_users: 45,
+          severity_levels: {
+            high: 8,
+            medium: 23,
+            low: 14
+          }
+        };
       case 'community-7':
+        return {
+          weekly_report_sent: true,
+          slack_channel: '#wg-ecosystem',
+          blocker_summary: {
+            new_blockers: 5,
+            resolved_blockers: 12,
+            recurring_patterns: 3
+          },
+          recommendations_sent: 8
+        };
+      case 'community-8':
+        return {
+          knowledge_sharing_opportunities: [
+            'weekly office hours',
+            'contributor spotlight',
+            'integration patterns library'
+          ],
+          community_initiatives: 4,
+          engagement_boost: 0.23
+        };
+      case 'community-9':
         return {
           ecosystem_health: 9.1,
           adoption_rate: 0.73,
@@ -1890,45 +2016,6 @@ export default function Dashboard() {
         {/* Main Content Area */}
         <div className="space-y-6">
 
-        {/* Simulation Controls */}
-        <Card className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900">Simulation Controls</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                Status: <span className="font-medium">{isSimulationRunning ? 'Running' : 'Stopped'}</span> | 
-                Speed: {simulationSpeed}x
-              </p>
-            </div>
-            <div className="flex space-x-3">
-              {!isSimulationRunning ? (
-                <button
-                  onClick={startSimulation}
-                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <Play className="w-4 h-4 mr-2" />
-                  Start Simulation
-                </button>
-              ) : (
-                <button
-                  onClick={stopSimulation}
-                  className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                >
-                  <Square className="w-4 h-4 mr-2" />
-                  Stop Simulation
-                </button>
-              )}
-              <button
-                onClick={resetSimulation}
-                className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Reset
-              </button>
-            </div>
-          </div>
-        </Card>
-
         {/* Agents Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {agents.map((agent) => (
@@ -2282,18 +2369,6 @@ export default function Dashboard() {
           </Card>
         )}
           </div>
-
-        {/* Demo Controls */}
-        <div className="mt-8">
-          <DemoControls
-            onScenarioSelect={handleScenarioSelect}
-            onAutoPilotToggle={handleAutoPilotToggle}
-            onRunAllScenarios={handleRunAllScenarios}
-            selectedScenario={selectedScenario}
-            autoPilot={autoPilot}
-            isRunningAllScenarios={isRunningAllScenarios}
-          />
-        </div>
 
         {/* Metrics Panel */}
         <div className="mt-8">
