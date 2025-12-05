@@ -1342,14 +1342,11 @@ export default function Dashboard() {
               </svg>
             </div>
             <div className="text-2xl md:text-3xl font-bold text-indigo-600 mb-1">
-              {adoptionMetrics.downloadTrends.length > 0 ? adoptionMetrics.downloadTrends[adoptionMetrics.downloadTrends.length - 1].downloads.toLocaleString() : "589"}
+              {repoStats.downloads.toLocaleString()}
             </div>
             <div className="text-gray-600 text-sm font-medium">Downloads</div>
             <div className="text-xs text-gray-500 mt-1">
-              +{downloadView === 'net-new' ? 
-                (adoptionMetrics.netNewDownloads.length > 0 ? adoptionMetrics.netNewDownloads[adoptionMetrics.netNewDownloads.length - 1].downloads : 66) :
-                (adoptionMetrics.netNewDownloads.length > 0 ? adoptionMetrics.netNewDownloads[adoptionMetrics.netNewDownloads.length - 1].downloads : 66)
-              } this month
+              +{repoStats.downloadsThisMonth || 0} this month
             </div>
           </div>
         </Card>
