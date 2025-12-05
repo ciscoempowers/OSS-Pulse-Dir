@@ -486,44 +486,44 @@ export default function Dashboard() {
       return [
         {
           id: 'community-1',
-          name: 'Usage Analytics Collection',
-          description: 'Collect and analyze usage patterns across different projects and integrations',
+          name: 'Ecosystem-Wide Data Collection',
+          description: 'Collect contribution and growth data across all directory projects (dir, dir-spec, oasf-sdk)',
           type: 'data_collection',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'community-2',
-          name: 'Community Contribution Tracking',
-          description: 'Review and approve community contribution metrics and insights',
+          name: 'Cross-Project Growth Analysis',
+          description: 'Analyze growth patterns and contributor movement between directory projects',
           type: 'human_approval',
           status: 'pending',
           approvalOptions: [
-            { id: 'approve', label: 'Publish Metrics', description: 'Share community insights', action: 'approve' },
-            { id: 'modify', label: 'Adjust Metrics', description: 'Modify tracking approach', action: 'modify' },
-            { id: 'private', label: 'Keep Private', description: 'Internal use only', action: 'skip' }
+            { id: 'approve', label: 'Publish Analysis', description: 'Share ecosystem insights', action: 'approve' },
+            { id: 'modify', label: 'Adjust Analysis', description: 'Modify analysis approach', action: 'modify' },
+            { id: 'internal', label: 'Internal Only', description: 'For working group review', action: 'skip' }
           ]
         },
         {
           id: 'community-3',
-          name: 'Success Story Identification',
-          description: 'Identify and document successful integration stories and use cases',
+          name: 'Developer Journey Mapping',
+          description: 'Map developer journeys across directory ecosystem projects and integrations',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'community-4',
-          name: 'Growth Insights Generation',
-          description: 'Generate insights on ecosystem growth and adoption patterns',
+          name: 'Adoption Pattern Analysis',
+          description: 'Identify adoption patterns and integration success across different use cases',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'community-5',
-          name: 'Community Engagement Analysis',
-          description: 'Analyze community engagement and identify growth opportunities',
+          name: 'Ecosystem Engagement Metrics',
+          description: 'Analyze cross-project engagement and identify ecosystem growth opportunities',
           type: 'data_collection',
           status: 'pending',
           approvalOptions: []
@@ -2211,8 +2211,10 @@ export default function Dashboard() {
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">{selectedWorkflow.agentName}</h3>
                   <p className="text-sm text-gray-600">
-                    Contributor: {selectedWorkflow.contributor.username} | 
-                    Experience: {selectedWorkflow.contributor.experience}
+                    {selectedWorkflow.agentId === 'community-agent' 
+                      ? 'Scope: Directory Ecosystem | Analysis: Cross-Project Patterns'
+                      : `Contributor: ${selectedWorkflow.contributor.username} | Experience: ${selectedWorkflow.contributor.experience}`
+                    }
                   </p>
                 </div>
               </div>
