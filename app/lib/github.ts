@@ -157,7 +157,7 @@ export async function getAllMilestones(): Promise<Milestone[]> {
   }
 }
 
-export async function getRepoStars(repo: string): Promise<{stars: number; forks: number; name: string; open_issues_count: number; downloads: number; contributors: number; newContributorsThisMonth: number; starsThisMonth: number; forksThisMonth: number; downloadsThisMonth: number}> {
+export async function getRepoStars(repo: string): Promise<{stars: number; forks: number; name: string; open_issues_count: number; pull_requests: number; downloads: number; contributors: number; newContributorsThisMonth: number; starsThisMonth: number; forksThisMonth: number; downloadsThisMonth: number}> {
   try {
     console.log(`🔍 Fetching repo stats for ${repo}...`);
     

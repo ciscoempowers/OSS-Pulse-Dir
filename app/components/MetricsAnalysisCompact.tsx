@@ -35,11 +35,10 @@ interface MetricsAnalysisProps {
   stars: number;
   forks: number;
   contributors: number;
-  issues: number;
-  prs: number;
+  downloads: number;
 }
 
-const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, contributors, issues, prs }) => {
+const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, contributors, downloads }) => {
   const [expandedMetric, setExpandedMetric] = useState<string | null>(null);
   const [analyses, setAnalyses] = useState<Record<string, MetricAnalysis>>({});
   const [loading, setLoading] = useState(true);
@@ -49,21 +48,19 @@ const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, 
     stars: { a2a: 1200, mcp: 8500, acp: 450, langchain: 28000, industryAverage: 1500 },
     forks: { a2a: 180, mcp: 1200, acp: 85, langchain: 4500, industryAverage: 300 },
     contributors: { a2a: 45, mcp: 180, acp: 25, langchain: 650, industryAverage: 80 },
-    issues: { a2a: 120, mcp: 340, acp: 65, langchain: 1200, industryAverage: 200 },
-    prs: { a2a: 85, mcp: 280, acp: 40, langchain: 950, industryAverage: 150 }
+    downloads: { a2a: 2500, mcp: 15000, acp: 800, langchain: 45000, industryAverage: 5000 }
   };
 
   useEffect(() => {
     generateAnalyses();
-  }, [stars, forks, contributors, issues, prs]);
+  }, [stars, forks, contributors, downloads]);
 
   const generateAnalyses = () => {
     const analysesData: Record<string, MetricAnalysis> = {
       stars: analyzeStars(stars),
       forks: analyzeForks(forks),
       contributors: analyzeContributors(contributors),
-      issues: analyzeIssues(issues),
-      prs: analyzePRs(prs)
+      downloads: analyzeDownloads(downloads)
     };
     setAnalyses(analysesData);
     setLoading(false);
@@ -126,42 +123,23 @@ const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, 
     trendPercentage: Math.floor(Math.random() * 40) + 10
   });
 
-  const analyzeIssues = (current: number): MetricAnalysis => ({
+  const analyzeDownloads = (current: number): MetricAnalysis => ({
     currentValue: current,
-    benchmark: benchmarkData.issues,
-    maturityContext: 'For 9-month standards, 30-100 issues shows active community usage.',
+    benchmark: benchmarkData.downloads,
+    maturityContext: 'For 9-month standards, 1,000-8,000 downloads indicates growing adoption and real-world usage.',
     analysis: {
-      status: current > 80 ? 'excellent' : current > 40 ? 'good' : 'concerning',
-      explanation: current > 80 ? 'High issue volume indicates strong adoption.' : 'Low issue volume may indicate limited usage.',
-      rootCauses: current < 40 ? ['Limited user awareness', 'Barriers to reporting'] : ['Growing user base'],
-      opportunities: ['Categorize issues for patterns', 'Turn issues into documentation']
+      status: current > 5000 ? 'excellent' : current > 2000 ? 'good' : current > 500 ? 'concerning' : 'critical',
+      explanation: current > 5000 ? 'Excellent download volume shows strong real-world adoption.' : current > 2000 ? 'Healthy download activity indicating growing usage.' : current > 500 ? 'Modest download volume suggests early adoption phase.' : 'Low download volume may indicate limited awareness or adoption barriers.',
+      rootCauses: current < 2000 ? ['Limited marketing and promotion', 'Complex installation process', 'Insufficient documentation and tutorials'] : ['Clear value proposition', 'Good documentation', 'Growing awareness in developer community'],
+      opportunities: ['Create installation tutorials and guides', 'Build integration examples', 'Develop community showcase']
     },
     recommendations: {
-      quickWins: current < 40 ? ['Simplify issue reporting', 'Create templates'] : ['Implement triage automation'],
-      strategicMoves: ['Build community resolution program', 'Create issue-based contributions'],
-      resourceNeeds: ['Issue triage capacity', 'Community support', 'Analytics tools']
+      quickWins: current < 2000 ? ['Optimize installation process', 'Create quick start guide', 'Add download badges to README'] : ['Create user success stories', 'Build integration gallery', 'Launch referral program'],
+      strategicMoves: ['Develop enterprise distribution channels', 'Create certification programs', 'Build strategic partnerships'],
+      resourceNeeds: ['Technical documentation writer', 'DevRel/content creation', 'Marketing and promotion budget']
     },
-    trend: Math.random() > 0.3 ? 'up' : 'stable',
-    trendPercentage: Math.floor(Math.random() * 35) + 8
-  });
-
-  const analyzePRs = (current: number): MetricAnalysis => ({
-    currentValue: current,
-    benchmark: benchmarkData.prs,
-    maturityContext: 'For 9-month standards, 20-60 PRs indicates active development community.',
-    analysis: {
-      status: current > 45 ? 'excellent' : current > 25 ? 'good' : 'concerning',
-      explanation: current > 45 ? 'Excellent PR activity.' : 'Low PR activity suggests contribution barriers.',
-      rootCauses: current < 25 ? ['Complex contribution process', 'Long review times'] : ['Streamlined process'],
-      opportunities: ['Reduce review time', 'Create PR mentorship program']
-    },
-    recommendations: {
-      quickWins: current < 25 ? ['Set 48-hour review SLA', 'Create PR template'] : ['Implement automated testing'],
-      strategicMoves: ['Build community review program', 'Create corporate partnerships'],
-      resourceNeeds: ['Maintainer capacity', 'CI/CD infrastructure', 'Community management']
-    },
-    trend: Math.random() > 0.25 ? 'up' : 'stable',
-    trendPercentage: Math.floor(Math.random() * 45) + 12
+    trend: Math.random() > 0.4 ? 'up' : 'stable',
+    trendPercentage: Math.floor(Math.random() * 50) + 15
   });
 
   const getStatusIcon = (status: string) => {
@@ -196,8 +174,7 @@ const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, 
     { key: 'stars', title: 'Stars', icon: <Target className="w-4 h-4" />, value: stars },
     { key: 'forks', title: 'Forks', icon: <BarChart3 className="w-4 h-4" />, value: forks },
     { key: 'contributors', title: 'Contributors', icon: <Users className="w-4 h-4" />, value: contributors },
-    { key: 'issues', title: 'Issues', icon: <AlertCircle className="w-4 h-4" />, value: issues },
-    { key: 'prs', title: 'PRs', icon: <Zap className="w-4 h-4" />, value: prs }
+    { key: 'downloads', title: 'Downloads', icon: <Zap className="w-4 h-4" />, value: downloads }
   ];
 
   if (loading) {

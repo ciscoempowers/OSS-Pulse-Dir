@@ -1503,8 +1503,7 @@ export default function Dashboard() {
               stars={repoStats.stars}
               forks={repoStats.forks}
               contributors={repoStats.contributors}
-              issues={repoStats.openIssues}
-              prs={repoStats.pullRequests}
+              downloads={repoStats.downloads}
             />
           </div>
         </div>
