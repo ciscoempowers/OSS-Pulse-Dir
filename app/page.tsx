@@ -9,8 +9,6 @@ import type { Milestone as GitHubMilestone, Discussion as GitHubDiscussion } fro
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import AIStrategicPartner from './components/AIStrategicPartner';
 import { Activity, Play, Square, RotateCcw, Users, GitBranch, Brain, Loader2, CheckCircle, Clock, User, Bot, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
-import HumanApprovalCard, { mockApprovalData } from '../components/agents/HumanApprovalCard';
-import { AGENT_COLORS, ANIMATIONS, getAgentColors, getStatusColors } from '../lib/agents/theme';
 import MetricsAnalysisCompact from './components/MetricsAnalysisCompact';
 
 // Vercel deployment trigger - button debugging deployed
@@ -933,11 +931,20 @@ export default function Dashboard() {
   
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'idle': return `${AGENT_COLORS.pending.bg} ${AGENT_COLORS.pending.text} ${AGENT_COLORS.pending.border}`;
-      case 'running': return `${AGENT_COLORS.automated.bg} ${AGENT_COLORS.automated.text} ${AGENT_COLORS.automated.border}`;
-      case 'paused': return `${AGENT_COLORS.human.bg} ${AGENT_COLORS.human.text} ${AGENT_COLORS.human.border}`;
-      case 'completed': return `${AGENT_COLORS.completed.bg} ${AGENT_COLORS.completed.text} ${AGENT_COLORS.completed.border}`;
-      default: return `${AGENT_COLORS.pending.bg} ${AGENT_COLORS.pending.text} ${AGENT_COLORS.pending.border}`;
+      case 'idle': return 'bg-gray-100 text-gray-700 border-gray-300';
+      case 'running': return 'bg-blue-100 text-blue-700 border-blue-300';
+      case 'paused': return 'bg-yellow-100 text-yellow-700 border-yellow-300';
+      case 'completed': return 'bg-green-100 text-green-700 border-green-300';
+      default: return 'bg-gray-100 text-gray-700 border-gray-300';
+    }
+  };
+
+  const getAgentColors = (type: string) => {
+    switch (type) {
+      case 'welcome': return { bg: 'bg-blue-100', border: 'border-blue-300', primary: '#2563eb' };
+      case 'contribution': return { bg: 'bg-green-100', border: 'border-green-300', primary: '#16a34a' };
+      case 'triage': return { bg: 'bg-purple-100', border: 'border-purple-300', primary: '#9333ea' };
+      default: return { bg: 'bg-gray-100', border: 'border-gray-300', primary: '#6b7280' };
     }
   };
 
@@ -2257,27 +2264,20 @@ export default function Dashboard() {
 
                       {/* Approval UI */}
                       {step.status === 'waiting_approval' && step.approvalOptions && (
-                        <div className="mt-4">
-                          <HumanApprovalCard
-                            title={step.name}
-                            description={step.description}
-                            agentName={selectedWorkflow.agentName}
-                            agentType={selectedWorkflow.agentId.replace('-agent', '') as 'welcome' | 'contribution' | 'triage'}
-                            contributor={selectedWorkflow.contributor}
-                            simulatedData={step.simulatedData || {}}
-                            approvalOptions={step.approvalOptions}
-                            onApprove={(modifiedData) => {
-                              handleApproval(selectedWorkflow.id, step.id, 'approve');
-                            }}
-                            onReject={(reason) => {
-                              handleApproval(selectedWorkflow.id, step.id, 'reject');
-                            }}
-                            onModify={(modifiedData) => {
-                              handleApproval(selectedWorkflow.id, step.id, 'modify');
-                            }}
-                            isLoading={false}
-                            timestamp={new Date()}
-                          />
+                        <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+                          <h4 className="font-semibold mb-2">{step.name}</h4>
+                          <p className="text-sm text-gray-600 mb-3">{step.description}</p>
+                          <div className="flex space-x-2">
+                            {step.approvalOptions.map((option) => (
+                              <button
+                                key={option.id}
+                                onClick={() => handleApproval(selectedWorkflow.id, step.id, option.action)}
+                                className="px-3 py-1 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+                              >
+                                {option.label}
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
