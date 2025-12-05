@@ -14,7 +14,7 @@ import MetricsPanel from '../components/agents/MetricsPanel';
 import DemoControls from '../components/agents/DemoControls';
 import { demoScenarios, getScenarioById, runAutoPilotScenario, calculateScenarioMetrics } from '../lib/agents/demoScenarios';
 import { AGENT_COLORS, ANIMATIONS, getAgentColors, getStatusColors } from '../lib/agents/theme';
-import MetricsAnalysis from './components/MetricsAnalysis';
+import MetricsAnalysisCompact from './components/MetricsAnalysisCompact';
 
 // Vercel deployment trigger - button debugging deployed
 interface Agent {
@@ -1251,8 +1251,10 @@ export default function Dashboard() {
 
       {/* Community Engagement Graphs */}
       <div id="community" className="mb-8">
-        {/* 3x2 Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left: Graphs (2 columns) */}
+          <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top Left: Contributor Growth */}
           <Card>
             <div className="flex justify-between items-center mb-4">
@@ -1492,17 +1494,21 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
           </Card>
+            </div>
+          </div>
+          
+          {/* Right: Compact Metrics Analysis */}
+          <div className="lg:col-span-1">
+            <MetricsAnalysisCompact 
+              stars={repoStats.stars}
+              forks={repoStats.forks}
+              contributors={repoStats.contributors}
+              issues={repoStats.openIssues}
+              prs={repoStats.pullRequests}
+            />
+          </div>
         </div>
       </div>
-
-      {/* Metrics Analysis & Insights */}
-      <MetricsAnalysis 
-        stars={repoStats.stars}
-        forks={repoStats.forks}
-        contributors={repoStats.contributors}
-        issues={repoStats.openIssues}
-        prs={repoStats.pullRequests}
-      />
 
       {/* Developer Experience Metrics */}
       <Card className="mb-8">
