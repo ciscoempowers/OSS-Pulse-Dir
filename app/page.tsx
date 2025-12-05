@@ -282,41 +282,41 @@ export default function Dashboard() {
   const [agents, setAgents] = useState<Agent[]>([
     {
       id: 'welcome-agent',
-      name: 'Welcome & Environment Setup',
+      name: 'New Contributor Onboarding',
       type: 'welcome',
       status: 'idle',
-      description: 'Automated welcome process with environment setup guidance for new contributors',
+      description: 'Onboards new contributors and notifies working group members weekly',
       progress: 0,
       metrics: {
-        totalWorkflows: 0,
-        successRate: 95,
-        averageCompletionTime: 20
+        totalWorkflows: 12,
+        successRate: 95.8,
+        averageCompletionTime: 4.2
       }
     },
     {
-      id: 'contribution-agent', 
-      name: 'First Contribution Facilitator',
+      id: 'integration-agent',
+      name: 'Integration Assistant',
       type: 'contribution',
       status: 'idle',
-      description: 'Guides contributors through their first contribution to the project',
+      description: 'Helps developers integrate the directory into their projects',
       progress: 0,
       metrics: {
-        totalWorkflows: 0,
-        successRate: 88,
-        averageCompletionTime: 60
+        totalWorkflows: 8,
+        successRate: 87.5,
+        averageCompletionTime: 6.8
       }
     },
     {
-      id: 'triage-agent',
-      name: 'Smart Triage & Mentorship', 
+      id: 'community-agent',
+      name: 'Community Growth',
       type: 'triage',
       status: 'idle',
-      description: 'Intelligent issue triage system with ongoing mentorship and contributor support',
+      description: 'Fosters ecosystem growth and tracks community contributions',
       progress: 0,
       metrics: {
-        totalWorkflows: 0,
-        successRate: 92,
-        averageCompletionTime: 45
+        totalWorkflows: 15,
+        successRate: 92.0,
+        averageCompletionTime: 3.5
       }
     }
   ]);
@@ -370,20 +370,16 @@ export default function Dashboard() {
         },
         {
           id: 'welcome-4',
-          name: 'Mentor Assignment Decision',
-          description: 'Review and approve mentor assignment based on contributor profile and availability',
-          type: 'human_approval',
+          name: 'Create Contributor Profile',
+          description: 'Create comprehensive profile using GitHub and LinkedIn data',
+          type: 'data_collection',
           status: 'pending',
-          approvalOptions: [
-            { id: 'approve', label: 'Assign Mentor', description: 'This mentor is a good match', action: 'approve' },
-            { id: 'reassign', label: 'Choose Different Mentor', description: 'Select a different mentor', action: 'modify' },
-            { id: 'skip', label: 'Skip Mentor Assignment', description: 'Proceed without mentor', action: 'skip' }
-          ]
+          approvalOptions: []
         },
         {
           id: 'welcome-5',
-          name: 'Schedule Onboarding Session',
-          description: 'Schedule welcome call with assigned mentor and team',
+          name: 'Weekly WG Notification',
+          description: 'Add contributor to weekly working group notification digest',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
@@ -405,101 +401,137 @@ export default function Dashboard() {
           approvalOptions: []
         }
       ];
-    case 'contribution-agent':
+    case 'integration-agent':
       return [
         {
-          id: 'contrib-1',
-          name: 'Analyze Contributor Profile & Skills',
-          description: 'Deep analysis of contributor background, skills, and learning preferences',
+          id: 'integration-1',
+          name: 'Project Structure Analysis',
+          description: 'Analyze existing project structure and identify integration points',
           type: 'data_collection',
           status: 'pending',
           approvalOptions: []
         },
         {
-          id: 'contrib-2',
-          name: 'Issue Recommendation Decision',
-          description: 'Review and approve recommended first issue based on contributor skill analysis',
+          id: 'integration-2',
+          name: 'Integration Recommendations',
+          description: 'Review and approve recommended integration approach for the project',
           type: 'human_approval',
           status: 'pending',
           approvalOptions: [
-            { id: 'approve', label: 'Assign This Issue', description: 'Perfect for skill level', action: 'approve' },
-            { id: 'suggest-alternative', label: 'Choose Different Issue', description: 'Select alternative', action: 'modify' },
-            { id: 'create-custom', label: 'Create Custom Task', description: 'Design tailored task', action: 'modify' }
+            { id: 'approve', label: 'Use This Approach', description: 'Recommended integration strategy', action: 'approve' },
+            { id: 'modify', label: 'Modify Approach', description: 'Adjust integration strategy', action: 'modify' },
+            { id: 'custom', label: 'Custom Integration', description: 'Design custom approach', action: 'modify' }
           ]
         },
         {
-          id: 'contrib-3',
-          name: 'Reserve and Assign Issue',
-          description: 'Formally assign the chosen issue to the contributor',
+          id: 'integration-3',
+          name: 'Automated Setup Script Generation',
+          description: 'Generate automated setup scripts for the directory integration',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
         },
         {
-          id: 'contrib-4',
-          name: 'Development Environment Setup',
-          description: 'Guide contributor through complete local development environment configuration',
+          id: 'integration-4',
+          name: 'Dependency Management Setup',
+          description: 'Configure package management and dependency resolution',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
         },
         {
-          id: 'contrib-5',
-          name: 'Create Feature Branch Strategy',
-          description: 'Help contributor create properly named feature branch and establish workflow',
-          type: 'automated',
-          status: 'pending',
-          approvalOptions: []
-        },
-        {
-          id: 'contrib-6',
-          name: 'Implementation Guidance & Checkpoints',
-          description: 'Provide step-by-step implementation guidance with interactive checkpoints',
+          id: 'integration-5',
+          name: 'Compatibility Checks',
+          description: 'Verify compatibility with existing systems and dependencies',
           type: 'data_collection',
           status: 'pending',
           approvalOptions: []
         },
         {
-          id: 'contrib-7',
-          name: 'Code Review & Merge Decision',
-          description: 'Submit completed work for code review and determine merge readiness',
+          id: 'integration-6',
+          name: 'Custom Configuration Wizard',
+          description: 'Guide through custom configuration options and settings',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'integration-7',
+          name: 'Integration Validation',
+          description: 'Validate successful integration and run compatibility tests',
           type: 'human_approval',
           status: 'pending',
           approvalOptions: [
-            { id: 'approve', label: 'Approve & Merge', description: 'Ready for merge', action: 'approve' },
-            { id: 'request-changes', label: 'Request Changes', description: 'Needs revisions', action: 'modify' },
-            { id: 'more-guidance', label: 'More Guidance', description: 'Needs additional help', action: 'modify' }
+            { id: 'approve', label: 'Integration Complete', description: 'Successfully integrated', action: 'approve' },
+            { id: 'debug', label: 'Debug Issues', description: 'Fix integration problems', action: 'modify' },
+            { id: 'retry', label: 'Retry Integration', description: 'Attempt different approach', action: 'modify' }
           ]
         }
       ];
-    case 'triage-agent':
+    case 'community-agent':
       return [
         {
-          id: 'triage-1',
-          name: 'Monitor Repository Activity',
-          description: 'Continuously monitor repository for new issues, PRs, and contributor activity patterns',
-          type: 'automated',
+          id: 'community-1',
+          name: 'Usage Analytics Collection',
+          description: 'Collect and analyze usage patterns across different projects and integrations',
+          type: 'data_collection',
           status: 'pending',
           approvalOptions: []
         },
         {
-          id: 'triage-2',
-          name: 'Intelligent Issue Analysis',
-          description: 'Analyze and categorize issues using NLP and historical data',
-          type: 'automated',
-          status: 'pending',
-          approvalOptions: []
-        },
-        {
-          id: 'triage-3',
-          name: 'Label & Priority Assignment',
-          description: 'Review and approve AI-suggested labels and priority assignments',
+          id: 'community-2',
+          name: 'Community Contribution Tracking',
+          description: 'Review and approve community contribution metrics and insights',
           type: 'human_approval',
           status: 'pending',
           approvalOptions: [
-            { id: 'approve', label: 'Apply Suggestions', description: 'Use AI suggestions', action: 'approve' },
-            { id: 'modify', label: 'Modify Labels', description: 'Adjust before applying', action: 'modify' },
-            { id: 'manual', label: 'Manual Assignment', description: 'Handle manually', action: 'reject' }
+            { id: 'approve', label: 'Publish Metrics', description: 'Share community insights', action: 'approve' },
+            { id: 'modify', label: 'Adjust Metrics', description: 'Modify tracking approach', action: 'modify' },
+            { id: 'private', label: 'Keep Private', description: 'Internal use only', action: 'skip' }
+          ]
+        },
+        {
+          id: 'community-3',
+          name: 'Success Story Identification',
+          description: 'Identify and document successful integration stories and use cases',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'community-4',
+          name: 'Growth Insights Generation',
+          description: 'Generate insights on ecosystem growth and adoption patterns',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'community-5',
+          name: 'Community Engagement Analysis',
+          description: 'Analyze community engagement and identify growth opportunities',
+          type: 'data_collection',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'community-6',
+          name: 'Knowledge Sharing Recommendations',
+          description: 'Recommend knowledge sharing opportunities and community initiatives',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'community-7',
+          name: 'Ecosystem Health Report',
+          description: 'Generate comprehensive ecosystem health and growth report',
+          type: 'human_approval',
+          status: 'pending',
+          approvalOptions: [
+            { id: 'publish', label: 'Publish Report', description: 'Share with community', action: 'approve' },
+            { id: 'draft', label: 'Save as Draft', description: 'Refine before publishing', action: 'modify' },
+            { id: 'internal', label: 'Internal Only', description: 'For internal review', action: 'skip' }
           ]
         }
       ];
@@ -614,6 +646,7 @@ export default function Dashboard() {
 
   const generateSimulatedData = (step: WorkflowStep) => {
     switch (step.id) {
+      // New Contributor Onboarding
       case 'welcome-1':
         return {
           technical_experience: 'intermediate',
@@ -628,25 +661,99 @@ export default function Dashboard() {
         };
       case 'welcome-4':
         return {
-          recommended_mentor: 'senior_dev_123',
-          reasoning: 'Matches TypeScript experience and timezone',
-          alternatives: ['mentor_456', 'mentor_789']
+          github_profile: 'github.com/johndoe',
+          linkedin_profile: 'linkedin.com/in/johndoe',
+          skills: ['TypeScript', 'React', 'Node.js'],
+          contributions: 15
         };
-      case 'contrib-2':
+      case 'welcome-5':
         return {
-          recommended_issue: 'ISSUE-123: Fix typo in README',
-          reasoning: 'Matches documentation experience and provides good learning opportunity',
-          estimated_time: '4-6 hours',
-          learning_value: 'high'
+          notification_sent: true,
+          wg_members_notified: 12,
+          weekly_digest_scheduled: true
         };
-      case 'triage-2':
+      
+      // Integration Assistant
+      case 'integration-1':
         return {
-          category: 'bug_report',
-          complexity: 'moderate',
-          sentiment: 'neutral',
-          urgency: 'medium',
-          estimated_effort: '4-6 hours'
+          project_type: 'React Application',
+          tech_stack: ['React', 'TypeScript', 'Node.js'],
+          integration_points: ['package.json', 'config', 'middleware'],
+          complexity: 'medium'
         };
+      case 'integration-2':
+        return {
+          recommended_approach: 'npm package integration',
+          compatibility_score: 0.95,
+          setup_time: '30 minutes',
+          maintenance_overhead: 'low'
+        };
+      case 'integration-5':
+        return {
+          compatibility_results: {
+            node_version: 'compatible',
+            dependencies: 'no_conflicts',
+            api_versions: 'compatible'
+          },
+          risk_level: 'low'
+        };
+      case 'integration-7':
+        return {
+          validation_passed: true,
+          test_results: {
+            unit_tests: 'passing',
+            integration_tests: 'passing',
+            compatibility_tests: 'passing'
+          },
+          performance_impact: 'minimal'
+        };
+      
+      // Community Growth
+      case 'community-1':
+        return {
+          total_integrations: 156,
+          active_projects: 89,
+          new_integrations_this_month: 12,
+          retention_rate: 0.87
+        };
+      case 'community-2':
+        return {
+          contributions_analyzed: 234,
+          top_contributors: ['alice', 'bob', 'charlie'],
+          community_health_score: 8.5,
+          growth_trend: 'positive'
+        };
+      case 'community-3':
+        return {
+          success_stories: [
+            'Company X reduced integration time by 60%',
+            'Startup Y built ecosystem on directory standard',
+            'Enterprise Z adopted across 5 departments'
+          ],
+          impact_metrics: {
+            time_saved: '4500 hours',
+            cost_reduction: '$2.3M',
+            developer_satisfaction: 9.2
+          }
+        };
+      case 'community-5':
+        return {
+          engagement_metrics: {
+            github_stars: 1250,
+            forks: 234,
+            issues_resolved: 89,
+            pr_merged: 45
+          },
+          growth_opportunities: ['documentation', 'examples', 'plugins']
+        };
+      case 'community-7':
+        return {
+          ecosystem_health: 9.1,
+          adoption_rate: 0.73,
+          community_satisfaction: 8.8,
+          recommendations: ['expand documentation', 'more enterprise features']
+        };
+      
       default:
         return { status: 'completed', timestamp: new Date() };
     }
