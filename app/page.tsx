@@ -14,6 +14,7 @@ import MetricsPanel from '../components/agents/MetricsPanel';
 import DemoControls from '../components/agents/DemoControls';
 import { demoScenarios, getScenarioById, runAutoPilotScenario, calculateScenarioMetrics } from '../lib/agents/demoScenarios';
 import { AGENT_COLORS, ANIMATIONS, getAgentColors, getStatusColors } from '../lib/agents/theme';
+import MetricsAnalysis from './components/MetricsAnalysis';
 
 // Vercel deployment trigger - button debugging deployed
 interface Agent {
@@ -1492,6 +1493,15 @@ export default function Dashboard() {
           </Card>
         </div>
       </div>
+
+      {/* Metrics Analysis & Insights */}
+      <MetricsAnalysis 
+        stars={repoStats.stars}
+        forks={repoStats.forks}
+        contributors={repoStats.contributors}
+        issues={repoStats.openIssues}
+        prs={repoStats.pullRequests}
+      />
 
       {/* Developer Experience Metrics */}
       <Card className="mb-8">
