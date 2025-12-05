@@ -10,7 +10,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import AIStrategicPartner from './components/AIStrategicPartner';
 import { Activity, Play, Square, RotateCcw, Users, GitBranch, Brain, Loader2, CheckCircle, Clock, User, Bot, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 import HumanApprovalCard, { mockApprovalData } from '../components/agents/HumanApprovalCard';
-import ActivityFeed, { AgentEvent } from '../components/agents/ActivityFeed';
 import MetricsPanel from '../components/agents/MetricsPanel';
 import DemoControls from '../components/agents/DemoControls';
 import { demoScenarios, getScenarioById, runAutoPilotScenario, calculateScenarioMetrics } from '../lib/agents/demoScenarios';
@@ -272,8 +271,7 @@ export default function Dashboard() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<WorkflowExecution | null>(null);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
   const [activeWorkflows, setActiveWorkflows] = useState<any[]>([]);
-  const [events, setEvents] = useState<AgentEvent[]>([]);
-  
+    
   // Demo mode state
   const [demoMode, setDemoMode] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState<string>('');
@@ -325,23 +323,176 @@ export default function Dashboard() {
   // Simulation functions
   const startSimulation = () => {
     setIsSimulationRunning(true);
-    addEvent('agent_started', 'Simulation started');
   };
 
   const stopSimulation = () => {
     setIsSimulationRunning(false);
-    addEvent('agent_completed', 'Simulation stopped');
-  };
 
-  const resetSimulation = () => {
-    setIsSimulationRunning(false);
-    setAgents(agents.map(agent => ({ ...agent, status: 'idle', progress: 0 })));
-    setActiveWorkflows([]);
-    setEvents([]);
-  };
+const getWorkflowSteps = (agentId: string): WorkflowStep[] => {
+  const agent = agents.find(a => a.id === agentId);
+  if (!agent) return [];
 
-  const startAgentSimulation = (agentId: string) => {
-    const agent = agents.find(a => a.id === agentId);
+  switch (agentId) {
+    case 'welcome-agent':
+      return [
+        {
+          id: 'welcome-1',
+          name: 'Analyze Contributor Profile',
+          description: 'Analyze GitHub profile, contribution history, and technical background',
+          type: 'data_collection',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'welcome-2',
+          name: 'Send Personalized Welcome',
+          description: 'Send customized welcome message based on contributor analysis',
+          type: 'notification',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'welcome-3',
+          name: 'Generate Environment Setup Guide',
+          description: 'Create personalized development environment setup checklist',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'welcome-4',
+          name: 'Mentor Assignment Decision',
+          description: 'Review and approve mentor assignment based on contributor profile and availability',
+          type: 'human_approval',
+          status: 'pending',
+          approvalOptions: [
+            { id: 'approve', label: 'Assign Mentor', description: 'This mentor is a good match', action: 'approve' },
+            { id: 'reassign', label: 'Choose Different Mentor', description: 'Select a different mentor', action: 'modify' },
+            { id: 'skip', label: 'Skip Mentor Assignment', description: 'Proceed without mentor', action: 'skip' }
+          ]
+        },
+        {
+          id: 'welcome-5',
+          name: 'Schedule Onboarding Session',
+          description: 'Schedule welcome call with assigned mentor and team',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'welcome-6',
+          name: 'Curate Learning Resources',
+          description: 'Send personalized learning materials and documentation',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'welcome-7',
+          name: 'Setup Verification Check',
+          description: 'Verify development environment is properly configured',
+          type: 'data_collection',
+          status: 'pending',
+          approvalOptions: []
+        }
+      ];
+    case 'contribution-agent':
+      return [
+        {
+          id: 'contrib-1',
+          name: 'Analyze Contributor Profile & Skills',
+          description: 'Deep analysis of contributor background, skills, and learning preferences',
+          type: 'data_collection',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'contrib-2',
+          name: 'Issue Recommendation Decision',
+          description: 'Review and approve recommended first issue based on contributor skill analysis',
+          type: 'human_approval',
+          status: 'pending',
+          approvalOptions: [
+            { id: 'approve', label: 'Assign This Issue', description: 'Perfect for skill level', action: 'approve' },
+            { id: 'suggest-alternative', label: 'Choose Different Issue', description: 'Select alternative', action: 'modify' },
+            { id: 'create-custom', label: 'Create Custom Task', description: 'Design tailored task', action: 'modify' }
+          ]
+        },
+        {
+          id: 'contrib-3',
+          name: 'Reserve and Assign Issue',
+          description: 'Formally assign the chosen issue to the contributor',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'contrib-4',
+          name: 'Development Environment Setup',
+          description: 'Guide contributor through complete local development environment configuration',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'contrib-5',
+          name: 'Create Feature Branch Strategy',
+          description: 'Help contributor create properly named feature branch and establish workflow',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'contrib-6',
+          name: 'Implementation Guidance & Checkpoints',
+          description: 'Provide step-by-step implementation guidance with interactive checkpoints',
+          type: 'data_collection',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'contrib-7',
+          name: 'Code Review & Merge Decision',
+          description: 'Submit completed work for code review and determine merge readiness',
+          type: 'human_approval',
+          status: 'pending',
+          approvalOptions: [
+            { id: 'approve', label: 'Approve & Merge', description: 'Ready for merge', action: 'approve' },
+            { id: 'request-changes', label: 'Request Changes', description: 'Needs revisions', action: 'modify' },
+            { id: 'more-guidance', label: 'More Guidance', description: 'Needs additional help', action: 'modify' }
+          ]
+        }
+      ];
+    case 'triage-agent':
+      return [
+        {
+          id: 'triage-1',
+          name: 'Monitor Repository Activity',
+          description: 'Continuously monitor repository for new issues, PRs, and contributor activity patterns',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'triage-2',
+          name: 'Intelligent Issue Analysis',
+          description: 'Analyze and categorize issues using NLP and historical data',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
+        },
+        {
+          id: 'triage-3',
+          name: 'Label & Priority Assignment',
+          description: 'Review and approve AI-suggested labels and priority assignments',
+          type: 'human_approval',
+          status: 'pending',
+          approvalOptions: [
+            { id: 'approve', label: 'Apply Suggestions', description: 'Use AI suggestions', action: 'approve' },
+            { id: 'modify', label: 'Modify Labels', description: 'Adjust before applying', action: 'modify' },
+            { id: 'manual', label: 'Manual Assignment', description: 'Handle manually', action: 'reject' }
+          ]
+        },
     if (!agent) return;
 
     // Create workflow execution
@@ -722,30 +873,9 @@ export default function Dashboard() {
         : agent
     ));
     
-    addEvent('workflow_completed', `${workflow.agentName} workflow completed`, workflow.agentId, { 
-      workflowId: workflow.id,
-      contributor: workflow.contributor.username,
-      duration: completedWorkflow.endTime && completedWorkflow.startTime 
-        ? completedWorkflow.endTime.getTime() - completedWorkflow.startTime.getTime()
-        : undefined
-    });
   };
 
-  const addEvent = (type: AgentEvent['type'], message: string, agentId?: string, details?: any) => {
-    const agent = agents.find(a => a.id === agentId);
-    const newEvent: AgentEvent = {
-      id: Date.now().toString(),
-      type,
-      agentId: agentId || 'system',
-      agentName: agent?.name || 'System',
-      agentType: agent?.type || 'welcome',
-      message,
-      timestamp: new Date(),
-      details
-    };
-    setEvents(prev => [...prev, newEvent]);
-  };
-
+  
   // Demo mode functions
   const handleScenarioSelect = (scenarioId: string) => {
     setSelectedScenario(scenarioId);
@@ -1067,31 +1197,9 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative">
-      {/* Floating Left Navigation */}
-      <nav className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 shadow-xl z-50 overflow-y-auto">
-        <div className="p-6">
-          <div className="space-y-2">
-            <a href="#community" className="block text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              KPI's
-            </a>
-            <a href="#roadmap" className="block text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Roadmap
-            </a>
-            <a href="#meetings" className="block text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Meetings and Discussions
-            </a>
-            <a href="#agents" className="block text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Agents
-            </a>
-            <a href="#intelligence" className="block text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Collective Intelligence
-            </a>
-          </div>
-        </div>
-      </nav>
-      
+            
       {/* Main Content */}
-      <div className="ml-64 p-4 md:p-8">
+      <div className="p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
         {error && (
           <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
@@ -1142,10 +1250,7 @@ export default function Dashboard() {
               </svg>
             </div>
             <div className="text-2xl md:text-3xl font-bold text-blue-600 mb-1">
-              {starsTrends.length > 0 
-                ? starsTrends[starsTrends.length - 1].stars.toLocaleString()
-                : repoStats.stars
-              }
+              {repoStats.stars.toLocaleString()}
             </div>
             <div className="text-gray-600 text-sm font-medium">GitHub Stars</div>
             <div className="text-xs text-gray-500 mt-1">
@@ -1165,10 +1270,7 @@ export default function Dashboard() {
               </svg>
             </div>
             <div className="text-2xl md:text-3xl font-bold text-green-600 mb-1">
-              {forksTrends.length > 0 
-                ? forksTrends[forksTrends.length - 1].forks.toLocaleString()
-                : repoStats.forks
-              }
+              {repoStats.forks.toLocaleString()}
             </div>
             <div className="text-gray-600 text-sm font-medium">Forks</div>
             <div className="text-xs text-gray-500 mt-1">
@@ -1188,10 +1290,7 @@ export default function Dashboard() {
               </svg>
             </div>
             <div className="text-2xl md:text-3xl font-bold text-indigo-600 mb-1">
-              {downloadView === 'net-new' ? 
-                (adoptionMetrics.netNewDownloads.length > 0 ? adoptionMetrics.netNewDownloads[adoptionMetrics.netNewDownloads.length - 1].downloads.toLocaleString() : "66") :
-                (adoptionMetrics.downloadTrends.length > 0 ? adoptionMetrics.downloadTrends[adoptionMetrics.downloadTrends.length - 1].downloads.toLocaleString() : "589")
-              }
+              {adoptionMetrics.downloadTrends.length > 0 ? adoptionMetrics.downloadTrends[adoptionMetrics.downloadTrends.length - 1].downloads.toLocaleString() : "589"}
             </div>
             <div className="text-gray-600 text-sm font-medium">Downloads</div>
             <div className="text-xs text-gray-500 mt-1">
@@ -1211,7 +1310,7 @@ export default function Dashboard() {
               </svg>
             </div>
             <div className="text-2xl md:text-3xl font-bold text-teal-600 mb-1">
-              {contributorGrowth.length > 0 ? contributorGrowth[contributorGrowth.length - 1].contributors : repoStats.contributors || 0}
+              {repoStats.contributors || 0}
             </div>
             <div className="text-gray-600 text-sm font-medium">Contributors</div>
             <div className="text-xs text-gray-500 mt-1">
@@ -1833,52 +1932,7 @@ export default function Dashboard() {
         </div>
       </Card>
 
-      {/* Recent GitHub Discussions */}
-      <Card id="engagement" className="mb-8">
-        <h2 className="text-2xl font-bold text-black">Recent GitHub Discussions</h2>
-        <p className="text-gray-700 mb-4">Latest conversations and decisions</p>
-        <div className="space-y-4">
-          {discussions.slice(0, 5).map((discussion) => (
-            <div key={discussion.id} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-              <div className="flex justify-between items-start">
-                <h3 className="font-semibold text-black">{discussion.title}</h3>
-                <span className="text-xs text-gray-600">
-                  {new Date(discussion.updated_at).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="mt-1 text-sm text-gray-700 space-y-1">
-                {extractKeyPoints(discussion.body).map((point, i) => (
-                  <div key={i} className="flex items-start">
-                    <span className="text-gray-500 mr-2">•</span>
-                    <span className="text-gray-700">{point}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-2 text-xs text-blue-700 font-medium">
-                {discussion.comments} comment{discussion.comments !== 1 ? 's' : ''}
-              </div>
-            </div>
-          ))}
-          {discussions.length === 0 && (
-            <div className="text-center text-gray-500 py-4">
-              No recent discussions found
-            </div>
-          )}
-        </div>
-        
-        {/* See More Link */}
-        <div className="mt-6 text-center">
-          <a 
-            href="https://github.com/agntcy/dir/discussions"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium"
-          >
-            See all discussions →
-          </a>
-        </div>
-      </Card>
-
+      
       {/* Agent Simulation Section */}
       <div className="mt-12">
         <div className="mb-8 text-center">
@@ -1893,10 +1947,8 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Main Content Area */}
-          <div className="lg:col-span-3 space-y-6">
+        {/* Main Content Area */}
+        <div className="space-y-6">
 
         {/* Simulation Controls */}
         <Card className="mb-8">
@@ -2281,17 +2333,6 @@ export default function Dashboard() {
           </Card>
         )}
           </div>
-
-          {/* Activity Feed Sidebar */}
-          <div className="lg:col-span-1">
-            <ActivityFeed
-              events={events}
-              onClearAll={() => setEvents([])}
-              maxEvents={50}
-              className="sticky top-4"
-            />
-          </div>
-        </div>
 
         {/* Demo Controls */}
         <div className="mt-8">
