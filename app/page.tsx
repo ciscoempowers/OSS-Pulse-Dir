@@ -10,7 +10,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import AIStrategicPartner from './components/AIStrategicPartner';
 import { Activity, Play, Square, RotateCcw, Users, GitBranch, Brain, Loader2, CheckCircle, Clock, User, Bot, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 import HumanApprovalCard, { mockApprovalData } from '../components/agents/HumanApprovalCard';
-import MetricsPanel from '../components/agents/MetricsPanel';
 import { AGENT_COLORS, ANIMATIONS, getAgentColors, getStatusColors } from '../lib/agents/theme';
 import MetricsAnalysisCompact from './components/MetricsAnalysisCompact';
 
@@ -2315,11 +2314,7 @@ export default function Dashboard() {
         )}
           </div>
 
-        {/* Metrics Panel */}
-        <div className="mt-8">
-          <MetricsPanel />
-        </div>
-      </div>
+              </div>
 
       </div>
 
