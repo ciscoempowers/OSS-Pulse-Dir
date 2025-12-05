@@ -9,6 +9,12 @@ import type { Milestone as GitHubMilestone, Discussion as GitHubDiscussion } fro
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import AIStrategicPartner from './components/AIStrategicPartner';
 import { Activity, Play, Square, RotateCcw, Users, GitBranch, Brain, Loader2, CheckCircle, Clock, User, Bot, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
+import HumanApprovalCard, { mockApprovalData } from '../components/agents/HumanApprovalCard';
+import ActivityFeed, { AgentEvent } from '../components/agents/ActivityFeed';
+import MetricsPanel from '../components/agents/MetricsPanel';
+import DemoControls from '../components/agents/DemoControls';
+import { demoScenarios, getScenarioById, runAutoPilotScenario, calculateScenarioMetrics } from '../lib/agents/demoScenarios';
+import { AGENT_COLORS, ANIMATIONS, getAgentColors, getStatusColors } from '../lib/agents/theme';
 
 // Agent interfaces
 interface Agent {
@@ -242,7 +248,7 @@ export default function Dashboard() {
     endTime?: Date;
     executionTime?: number;
     simulatedData?: any;
-    approvalOptions?: Array<{ id: string; label: string; description: string; action: string }>;
+    approvalOptions?: Array<{ id: string; label: string; description: string; action: 'approve' | 'modify' | 'reject' | 'skip' }>;
   }
 
   interface WorkflowExecution {
@@ -266,7 +272,13 @@ export default function Dashboard() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<WorkflowExecution | null>(null);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
   const [activeWorkflows, setActiveWorkflows] = useState<any[]>([]);
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<AgentEvent[]>([]);
+  
+  // Demo mode state
+  const [demoMode, setDemoMode] = useState(false);
+  const [selectedScenario, setSelectedScenario] = useState<string>('');
+  const [autoPilot, setAutoPilot] = useState(false);
+  const [isRunningAllScenarios, setIsRunningAllScenarios] = useState(false);
 
   const [agents, setAgents] = useState<Agent[]>([
     {
@@ -313,12 +325,12 @@ export default function Dashboard() {
   // Simulation functions
   const startSimulation = () => {
     setIsSimulationRunning(true);
-    addEvent('simulation_started', 'Simulation started');
+    addEvent('agent_started', 'Simulation started');
   };
 
   const stopSimulation = () => {
     setIsSimulationRunning(false);
-    addEvent('simulation_stopped', 'Simulation stopped');
+    addEvent('agent_completed', 'Simulation stopped');
   };
 
   const resetSimulation = () => {
@@ -356,7 +368,7 @@ export default function Dashboard() {
         : a
     ));
     
-    addEvent('agent_started', `${agent.name} started`);
+    addEvent('agent_started', `${agent.name} started`, agentId, { contributor: workflowExecution.contributor.username });
     executeWorkflowSteps(workflowExecution);
   };
 
@@ -588,7 +600,11 @@ export default function Dashboard() {
       updatedWorkflow.steps[currentStepIndex] = { ...step, status: 'running', startTime: new Date() };
       
       setSelectedWorkflow(updatedWorkflow);
-      addEvent('step_started', `${step.name} started`);
+      addEvent('step_started', `${step.name} started`, workflow.agentId, { 
+        stepName: step.name, 
+        stepId: step.id,
+        workflowId: workflow.id 
+      });
       
       // Simulate step execution
       setTimeout(() => {
@@ -600,12 +616,22 @@ export default function Dashboard() {
           processedStep.status = 'waiting_approval';
           updatedWorkflow.steps[currentStepIndex] = processedStep;
           setSelectedWorkflow(updatedWorkflow);
-          addEvent('approval_requested', `Approval required for ${step.name}`);
+          addEvent('approval_requested', `Approval required for ${step.name}`, workflow.agentId, { 
+            stepName: step.name, 
+            stepId: step.id,
+            workflowId: workflow.id,
+            contributor: workflow.contributor.username
+          });
         } else {
           processedStep.status = 'completed';
           updatedWorkflow.steps[currentStepIndex] = processedStep;
           setSelectedWorkflow(updatedWorkflow);
-          addEvent('step_completed', `${step.name} completed`);
+          addEvent('step_completed', `${step.name} completed`, workflow.agentId, { 
+            stepName: step.name, 
+            stepId: step.id,
+            workflowId: workflow.id,
+            duration: processedStep.executionTime
+          });
           currentStepIndex++;
           setTimeout(executeNextStep, 1000 / simulationSpeed);
         }
@@ -672,7 +698,12 @@ export default function Dashboard() {
     };
 
     setSelectedWorkflow(updatedWorkflow);
-    addEvent('approval_completed', `Step ${workflow.steps[stepIndex].name} ${action}d`);
+    addEvent('approval_completed', `Step ${workflow.steps[stepIndex].name} ${action}d`, workflow.agentId, { 
+      stepName: workflow.steps[stepIndex].name, 
+      stepId: workflow.steps[stepIndex].id,
+      workflowId: workflow.id,
+      action
+    });
 
     // Continue with next step
     setTimeout(() => {
@@ -691,26 +722,96 @@ export default function Dashboard() {
         : agent
     ));
     
-    addEvent('workflow_completed', `${workflow.agentName} workflow completed`);
+    addEvent('workflow_completed', `${workflow.agentName} workflow completed`, workflow.agentId, { 
+      workflowId: workflow.id,
+      contributor: workflow.contributor.username,
+      duration: completedWorkflow.endTime && completedWorkflow.startTime 
+        ? completedWorkflow.endTime.getTime() - completedWorkflow.startTime.getTime()
+        : undefined
+    });
   };
 
-  const addEvent = (type: string, message: string) => {
-    const newEvent = {
+  const addEvent = (type: AgentEvent['type'], message: string, agentId?: string, details?: any) => {
+    const agent = agents.find(a => a.id === agentId);
+    const newEvent: AgentEvent = {
       id: Date.now().toString(),
       type,
+      agentId: agentId || 'system',
+      agentName: agent?.name || 'System',
+      agentType: agent?.type || 'welcome',
       message,
-      timestamp: new Date()
+      timestamp: new Date(),
+      details
     };
     setEvents(prev => [...prev, newEvent]);
   };
 
+  // Demo mode functions
+  const handleScenarioSelect = (scenarioId: string) => {
+    setSelectedScenario(scenarioId);
+    const scenario = getScenarioById(scenarioId);
+    if (scenario) {
+      // Update the contributor info for the selected scenario
+      const agentId = `${scenario.agentType}-agent`;
+      setAgents(prev => prev.map(agent => 
+        agent.id === agentId 
+          ? { ...agent, contributor: scenario.contributor }
+          : agent
+      ));
+      addEvent('agent_started', `Demo scenario selected: ${scenario.name}`, agentId, { scenarioId });
+    }
+  };
+
+  const handleAutoPilotToggle = (enabled: boolean) => {
+    setAutoPilot(enabled);
+    addEvent('agent_started', `Auto-pilot ${enabled ? 'enabled' : 'disabled'}`, 'system', { autoPilot: enabled });
+  };
+
+  const handleRunAllScenarios = async () => {
+    setIsRunningAllScenarios(true);
+    addEvent('agent_started', 'Running all demo scenarios', 'system');
+    
+    for (const scenario of demoScenarios) {
+      setSelectedScenario(scenario.id);
+      handleScenarioSelect(scenario.id);
+      
+      // Start the agent for this scenario
+      const agentId = `${scenario.agentType}-agent`;
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      startAgentSimulation(agentId);
+      
+      // Wait for scenario to complete or timeout
+      await new Promise(resolve => setTimeout(resolve, scenario.timing.totalDuration + 2000));
+    }
+    
+    setIsRunningAllScenarios(false);
+    addEvent('workflow_completed', 'All demo scenarios completed', 'system');
+  };
+
+  const runDemoScenario = (scenarioId: string) => {
+    const scenario = getScenarioById(scenarioId);
+    if (!scenario || !autoPilot) return;
+    
+    const agentId = `${scenario.agentType}-agent`;
+    
+    // Set up auto-approval for human steps
+    runAutoPilotScenario(scenario, (stepId) => {
+      const response = scenario.humanResponses[stepId];
+      if (response) {
+        setTimeout(() => {
+          handleApproval(selectedWorkflow?.id || '', stepId, response.action);
+        }, scenario.timing.approvalDelay);
+      }
+    });
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'idle': return 'bg-gray-100 text-gray-800';
-      case 'running': return 'bg-blue-100 text-blue-800';
-      case 'paused': return 'bg-yellow-100 text-yellow-800';
-      case 'completed': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'idle': return `${AGENT_COLORS.pending.bg} ${AGENT_COLORS.pending.text} ${AGENT_COLORS.pending.border}`;
+      case 'running': return `${AGENT_COLORS.automated.bg} ${AGENT_COLORS.automated.text} ${AGENT_COLORS.automated.border}`;
+      case 'paused': return `${AGENT_COLORS.human.bg} ${AGENT_COLORS.human.text} ${AGENT_COLORS.human.border}`;
+      case 'completed': return `${AGENT_COLORS.completed.bg} ${AGENT_COLORS.completed.text} ${AGENT_COLORS.completed.border}`;
+      default: return `${AGENT_COLORS.pending.bg} ${AGENT_COLORS.pending.text} ${AGENT_COLORS.pending.border}`;
     }
   };
 
@@ -1792,6 +1893,21 @@ export default function Dashboard() {
           </p>
         </div>
 
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Main Content Area */}
+          <div className="lg:col-span-3 space-y-6">
+
+        {/* Demo Controls */}
+        <DemoControls
+          onScenarioSelect={handleScenarioSelect}
+          onAutoPilotToggle={handleAutoPilotToggle}
+          onRunAllScenarios={handleRunAllScenarios}
+          selectedScenario={selectedScenario}
+          autoPilot={autoPilot}
+          isRunningAllScenarios={isRunningAllScenarios}
+        />
+
         {/* Simulation Controls */}
         <Card className="mb-8">
           <div className="flex items-center justify-between">
@@ -1834,17 +1950,20 @@ export default function Dashboard() {
         {/* Agents Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {agents.map((agent) => (
-            <Card key={agent.id} className="hover:shadow-lg transition-all duration-300 border-0 shadow-md">
+            <Card key={agent.id} className={`transition-all duration-300 transform hover:scale-102 border-0 shadow-md ${
+                  agent.status === 'running' 
+                    ? 'ring-2 ring-blue-500 shadow-xl scale-105 animate-pulse' 
+                    : agent.status === 'completed'
+                    ? 'ring-2 ring-green-500 shadow-lg'
+                    : 'hover:shadow-lg'
+                }`}>
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${
-                      agent.type === 'welcome' ? 'bg-blue-100' :
-                      agent.type === 'contribution' ? 'bg-green-100' : 'bg-purple-100'
-                    }`}>
-                      {agent.type === 'welcome' ? <Users className="w-5 h-5 text-blue-600" /> :
-                       agent.type === 'contribution' ? <GitBranch className="w-5 h-5 text-green-600" /> :
-                       <Brain className="w-5 h-5 text-purple-600" />}
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${getAgentColors(agent.type).bg} ${getAgentColors(agent.type).border}`}>
+                      {agent.type === 'welcome' ? <Users className="w-5 h-5" style={{ color: getAgentColors(agent.type).primary }} /> :
+                       agent.type === 'contribution' ? <GitBranch className="w-5 h-5" style={{ color: getAgentColors(agent.type).primary }} /> :
+                       <Brain className="w-5 h-5" style={{ color: getAgentColors(agent.type).primary }} />}
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">{agent.name}</h3>
@@ -1865,10 +1984,13 @@ export default function Dashboard() {
                       <span className="text-gray-500">Progress</span>
                       <span className="font-medium">{agent.progress}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                       <div 
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
-                        style={{ width: `${agent.progress}%` }}
+                        className={`h-2 rounded-full transition-all duration-700 ease-out ${agent.status === 'running' ? 'animate-pulse' : ''}`}
+                        style={{ 
+                          width: `${agent.progress}%`,
+                          backgroundColor: getAgentColors(agent.type).primary
+                        }}
                       />
                     </div>
                   </div>
@@ -1898,10 +2020,10 @@ export default function Dashboard() {
                         { id: `workflow-${agent.id}`, agentId: agent.id, agentName: agent.name, status: 'idle' as const, currentStepIndex: 0, steps: getWorkflowSteps(agent.id), contributor: { username: 'johndoe', experience: 'intermediate', interests: ['frontend', 'documentation'] } };
                       setSelectedWorkflow(workflow);
                     }}
-                    className={`flex-1 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    className={`flex-1 px-3 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 ${
                       selectedWorkflow?.agentId === agent.id
-                        ? 'bg-purple-600 text-white hover:bg-purple-700'
-                        : 'bg-gray-600 text-white hover:bg-gray-700'
+                        ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-md hover:shadow-lg'
+                        : 'bg-gray-600 text-white hover:bg-gray-700 shadow-sm hover:shadow-md'
                     }`}
                   >
                     {selectedWorkflow?.agentId === agent.id ? 'Hide Details' : 'View Details'}
@@ -1909,11 +2031,14 @@ export default function Dashboard() {
                   <button
                     onClick={() => startAgentSimulation(agent.id)}
                     disabled={agent.status !== 'idle'}
-                    className={`flex-1 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    className={`flex-1 px-3 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 ${
                       agent.status === 'idle' 
-                        ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md' 
+                        ? 'text-white hover:shadow-md shadow-sm' 
                         : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     }`}
+                    style={{
+                      backgroundColor: agent.status === 'idle' ? getAgentColors(agent.type).primary : undefined
+                    }}
                   >
                     {agent.status === 'idle' ? (
                       <>
@@ -2116,24 +2241,27 @@ export default function Dashboard() {
 
                       {/* Approval UI */}
                       {step.status === 'waiting_approval' && step.approvalOptions && (
-                        <div className="mt-4 p-3 bg-yellow-100 rounded border border-yellow-200">
-                          <h5 className="text-sm font-medium text-yellow-800 mb-2">Approval Required:</h5>
-                          <div className="space-y-2">
-                            {step.approvalOptions.map((option) => (
-                              <button
-                                key={option.id}
-                                onClick={() => handleApproval(selectedWorkflow.id, step.id, option.action)}
-                                className={`w-full text-left p-3 rounded border transition-colors ${
-                                  option.action === 'approve' ? 'bg-green-50 border-green-200 hover:bg-green-100' :
-                                  option.action === 'modify' ? 'bg-blue-50 border-blue-200 hover:bg-blue-100' :
-                                  'bg-gray-50 border-gray-200 hover:bg-gray-100'
-                                }`}
-                              >
-                                <div className="font-medium text-sm">{option.label}</div>
-                                <div className="text-xs text-gray-600 mt-1">{option.description}</div>
-                              </button>
-                            ))}
-                          </div>
+                        <div className="mt-4">
+                          <HumanApprovalCard
+                            title={step.name}
+                            description={step.description}
+                            agentName={selectedWorkflow.agentName}
+                            agentType={selectedWorkflow.agentId.replace('-agent', '') as 'welcome' | 'contribution' | 'triage'}
+                            contributor={selectedWorkflow.contributor}
+                            simulatedData={step.simulatedData || {}}
+                            approvalOptions={step.approvalOptions}
+                            onApprove={(modifiedData) => {
+                              handleApproval(selectedWorkflow.id, step.id, 'approve');
+                            }}
+                            onReject={(reason) => {
+                              handleApproval(selectedWorkflow.id, step.id, 'reject');
+                            }}
+                            onModify={(modifiedData) => {
+                              handleApproval(selectedWorkflow.id, step.id, 'modify');
+                            }}
+                            isLoading={false}
+                            timestamp={new Date()}
+                          />
                         </div>
                       )}
                     </div>
@@ -2162,6 +2290,23 @@ export default function Dashboard() {
             </div>
           </Card>
         )}
+          </div>
+
+          {/* Activity Feed Sidebar */}
+          <div className="lg:col-span-1">
+            <ActivityFeed
+              events={events}
+              onClearAll={() => setEvents([])}
+              maxEvents={50}
+              className="sticky top-4"
+            />
+          </div>
+        </div>
+
+        {/* Metrics Panel */}
+        <div className="mt-8">
+          <MetricsPanel />
+        </div>
       </div>
 
       </div>
