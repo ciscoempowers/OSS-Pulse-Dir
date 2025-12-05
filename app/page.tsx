@@ -1161,7 +1161,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={250} minWidth={300}>
                 <LineChart data={contributorView === 'cumulative' ? contributorGrowth : 
     (detailedAnalytics.newContributorsPerMonth.length > 0 ? detailedAnalytics.newContributorsPerMonth :
       contributorGrowth.map((item, index) => {
@@ -1216,7 +1216,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={250} minWidth={300}>
                 <LineChart data={starsView === 'cumulative' ? starsTrends : netNewStarsTrends}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
@@ -1263,7 +1263,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={250} minWidth={300}>
                 <LineChart data={forksView === 'cumulative' ? forksTrends : netNewForksTrends}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
@@ -1288,7 +1288,7 @@ export default function Dashboard() {
               <h3 className="text-lg font-semibold text-black">Contributor Retention Rates</h3>
             </div>
             <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={250} minWidth={300}>
                 <LineChart data={detailedAnalytics.retentionRates}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
@@ -1335,7 +1335,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={250} minWidth={300}>
                 <LineChart 
                   data={downloadView === 'net-new' ? 
     (adoptionMetrics.netNewDownloads.length > 0 ? adoptionMetrics.netNewDownloads : [
