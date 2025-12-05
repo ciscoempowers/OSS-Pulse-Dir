@@ -512,6 +512,11 @@ export default function Dashboard() {
     const agent = agents.find(a => a.id === agentId);
     if (!agent) return;
 
+    console.log(`Starting simulation for ${agent.name} (${agentId})`);
+    
+    const workflowSteps = getWorkflowSteps(agentId);
+    console.log(`Workflow steps for ${agent.name}:`, workflowSteps.length, 'steps');
+
     // Create workflow execution
     const workflowExecution: WorkflowExecution = {
       id: `workflow-${Date.now()}`,
@@ -525,8 +530,10 @@ export default function Dashboard() {
         experience: 'intermediate',
         interests: ['frontend', 'documentation']
       },
-      steps: getWorkflowSteps(agentId)
+      steps: workflowSteps
     };
+    
+    console.log(`Created workflow execution:`, workflowExecution);
 
     setSelectedWorkflow(workflowExecution);
     
@@ -540,6 +547,13 @@ export default function Dashboard() {
   };
 
   const executeWorkflowSteps = (workflow: WorkflowExecution) => {
+    console.log(`executeWorkflowSteps called for ${workflow.agentName} with ${workflow.steps.length} steps`);
+    
+    if (!workflow.steps || workflow.steps.length === 0) {
+      console.error(`No steps found for workflow ${workflow.agentName}`);
+      return;
+    }
+    
     let currentStepIndex = 0;
     
     const executeNextStep = () => {
