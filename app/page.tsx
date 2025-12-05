@@ -931,61 +931,7 @@ export default function Dashboard() {
   };
 
   
-  // Demo mode functions
-  const handleScenarioSelect = (scenarioId: string) => {
-    setSelectedScenario(scenarioId);
-    const scenario = getScenarioById(scenarioId);
-    if (scenario) {
-      // Update the contributor info for the selected scenario
-      const agentId = `${scenario.agentType}-agent`;
-      setAgents(prev => prev.map(agent => 
-        agent.id === agentId 
-          ? { ...agent, contributor: scenario.contributor }
-          : agent
-      ));
-    }
-  };
-
-  const handleAutoPilotToggle = (enabled: boolean) => {
-    setAutoPilot(enabled);
-  };
-
-  const handleRunAllScenarios = async () => {
-    setIsRunningAllScenarios(true);
-    
-    for (const scenario of demoScenarios) {
-      setSelectedScenario(scenario.id);
-      handleScenarioSelect(scenario.id);
-      
-      // Start the agent for this scenario
-      const agentId = `${scenario.agentType}-agent`;
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      startAgentSimulation(agentId);
-      
-      // Wait for scenario to complete or timeout
-      await new Promise(resolve => setTimeout(resolve, scenario.timing.totalDuration + 2000));
-    }
-    
-    setIsRunningAllScenarios(false);
-  };
-
-  const runDemoScenario = (scenarioId: string) => {
-    const scenario = getScenarioById(scenarioId);
-    if (!scenario || !autoPilot) return;
-    
-    const agentId = `${scenario.agentType}-agent`;
-    
-    // Set up auto-approval for human steps
-    runAutoPilotScenario(scenario, (stepId) => {
-      const response = scenario.humanResponses[stepId];
-      if (response) {
-        setTimeout(() => {
-          handleApproval(selectedWorkflow?.id || '', stepId, response.action);
-        }, scenario.timing.approvalDelay);
-      }
-    });
-  };
-
+  
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'idle': return `${AGENT_COLORS.pending.bg} ${AGENT_COLORS.pending.text} ${AGENT_COLORS.pending.border}`;

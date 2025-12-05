@@ -43,9 +43,6 @@ const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, 
   const [analyses, setAnalyses] = useState<Record<string, MetricAnalysis>>({});
   const [loading, setLoading] = useState(true);
 
-  // Debug logging
-  console.log('MetricsAnalysisCompact props:', { stars, forks, contributors, downloads });
-
   // Real GitHub repository data (aligned with OSS project launched March 2025)
   const benchmarkData = {
     stars: { a2a: 42, mcp: 8500, acp: 450, langchain: 28000, industryAverage: 1500 },
@@ -59,21 +56,14 @@ const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, 
   }, [stars, forks, contributors, downloads]);
 
   const generateAnalyses = () => {
-    try {
-      console.log('Generating analyses for:', { stars, forks, contributors, downloads });
-      const analysesData: Record<string, MetricAnalysis> = {
-        stars: analyzeStars(stars),
-        forks: analyzeForks(forks),
-        contributors: analyzeContributors(contributors),
-        downloads: analyzeDownloads(downloads)
-      };
-      console.log('Generated analyses:', analysesData);
-      setAnalyses(analysesData);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error generating analyses:', error);
-      setLoading(false);
-    }
+    const analysesData: Record<string, MetricAnalysis> = {
+      stars: analyzeStars(stars),
+      forks: analyzeForks(forks),
+      contributors: analyzeContributors(contributors),
+      downloads: analyzeDownloads(downloads)
+    };
+    setAnalyses(analysesData);
+    setLoading(false);
   };
 
   const analyzeStars = (current: number): MetricAnalysis => ({
