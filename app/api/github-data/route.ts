@@ -1,33 +1,49 @@
 import { NextResponse } from 'next/server';
-import { getAllMilestones, getDiscussions, getRepoStars, getContributorGrowth, getDetailedContributorAnalytics, getGitHubDependents, getAdoptionMetrics, getDeveloperExperienceMetrics } from '@/app/lib/github';
+import { getAllMilestones, getRepoStars, getContributorGrowth, getAdoptionMetrics, getDetailedContributorAnalytics, getDeveloperExperienceMetrics, getStarsGrowth, getForksGrowth, getDownloadsGrowth } from '../../lib/github';
 
 export async function GET() {
+  console.log("=== API ROUTE START ===");
   try {
-    const results = await Promise.allSettled([
+    console.log('🚀 Starting GitHub data fetch...');
+    
+    // Fetch all data in parallel
+    const [
+      milestones,
+      stars,
+      contributorGrowth,
+      adoptionMetrics,
+      contributorAnalytics,
+      devExperience,
+      starsGrowth,
+      forksGrowth,
+      downloadsGrowth
+    ] = await Promise.allSettled([
       getAllMilestones(),
-      getDiscussions(),
       getRepoStars('dir'),
       getContributorGrowth('dir'),
-      getDetailedContributorAnalytics('dir'),
-      getGitHubDependents('dir'),
       getAdoptionMetrics('dir'),
+      getDetailedContributorAnalytics('dir'),
       getDeveloperExperienceMetrics('dir'),
+      getStarsGrowth('agntcy', 'dir'),
+      getForksGrowth('agntcy', 'dir'),
+      getDownloadsGrowth('agntcy', 'dir')
     ]);
 
-    const data = {
-      milestones: results[0].status === 'fulfilled' ? results[0].value : null,
-      discussions: results[1].status === 'fulfilled' ? results[1].value : null,
-      stars: results[2].status === 'fulfilled' ? results[2].value : null,
-      contributorGrowth: results[3].status === 'fulfilled' ? results[3].value : null,
-      contributorAnalytics: results[4].status === 'fulfilled' ? results[4].value : null,
-      dependents: results[5].status === 'fulfilled' ? results[5].value : null,
-      adoption: results[6].status === 'fulfilled' ? results[6].value : null,
-      devExperience: results[7].status === 'fulfilled' ? results[7].value : null,
-    };
+    return NextResponse.json({
+      milestones: milestones.status === 'fulfilled' ? milestones.value : [],
+      stars: stars.status === 'fulfilled' ? stars.value : { stars: 0, forks: 0, contributors: 0 },
+      contributorGrowth: contributorGrowth.status === 'fulfilled' ? contributorGrowth.value : [],
+      adoption: adoptionMetrics.status === 'fulfilled' ? adoptionMetrics.value : {},
+      contributorAnalytics: contributorAnalytics.status === 'fulfilled' ? contributorAnalytics.value : {},
+      devExperience: devExperience.status === 'fulfilled' ? devExperience.value : {},
+      starsGrowth: starsGrowth.status === 'fulfilled' ? starsGrowth.value : [],
+      forksGrowth: forksGrowth.status === 'fulfilled' ? forksGrowth.value : [],
+      downloadsGrowth: downloadsGrowth.status === 'fulfilled' ? downloadsGrowth.value : []
+    });
 
-    return NextResponse.json(data);
+    console.log('✅ GitHub data fetch completed');
   } catch (error) {
-    console.error('Error fetching GitHub data:', error);
+    console.error('❌ Error fetching GitHub data:', error);
     return NextResponse.json({ error: 'Failed to fetch GitHub data' }, { status: 500 });
   }
 }

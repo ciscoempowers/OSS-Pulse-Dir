@@ -5,11 +5,7 @@ import { Card } from '@tremor/react';
 import { TrendingUp, TrendingDown, AlertCircle, CheckCircle, ChevronDown, ChevronUp, Target, Zap, Users, BarChart3 } from 'lucide-react';
 
 interface BenchmarkData {
-  a2a: number;
   mcp: number;
-  acp: number;
-  langchain: number;
-  industryAverage: number;
 }
 
 interface MetricAnalysis {
@@ -45,10 +41,10 @@ const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, 
 
   // Real GitHub repository data (aligned with OSS project launched March 2025)
   const benchmarkData = {
-    stars: { a2a: 42, mcp: 8500, acp: 450, langchain: 28000, industryAverage: 1500 },
-    forks: { a2a: 15, mcp: 1200, acp: 85, langchain: 4500, industryAverage: 300 },
-    contributors: { a2a: 8, mcp: 180, acp: 25, langchain: 650, industryAverage: 80 },
-    downloads: { a2a: 1200, mcp: 15000, acp: 800, langchain: 45000, industryAverage: 5000 }
+    stars: { mcp: 8500 },
+    forks: { mcp: 1200 },
+    contributors: { mcp: 180 },
+    downloads: { mcp: 15000 }
   };
 
   useEffect(() => {
@@ -69,17 +65,17 @@ const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, 
   const analyzeStars = (current: number): MetricAnalysis => ({
     currentValue: current,
     benchmark: benchmarkData.stars,
-    maturityContext: 'At 9 months, successful OSS standards typically have 200-800 stars.',
+    maturityContext: 'At 9 months, successful OSS standards typically have 200-800 stars. Leading protocols like LangChain have 28k stars.',
     analysis: {
       status: current > 500 ? 'good' : current > 200 ? 'concerning' : 'critical',
-      explanation: current > 500 ? 'Strong early adoption.' : 'Below expected growth for 9-month-old OSS standard.',
-      rootCauses: current < 500 ? ['Limited visibility', 'Complex value proposition'] : ['Clear value proposition'],
-      opportunities: ['Partner with major agent frameworks', 'Create integration tutorials']
+      explanation: current > 500 ? 'Strong early adoption.' : `Behind leading protocols. Need increased visibility and outreach.`,
+      rootCauses: current < 500 ? ['Limited visibility in developer community', 'Need stronger value proposition communication', 'Early stage adoption challenges'] : ['Clear value proposition'],
+      opportunities: ['Partner with major agent frameworks', 'Create integration tutorials', 'Build developer community']
     },
     recommendations: {
-      quickWins: current < 500 ? ['Optimize README', 'Create video tutorials'] : ['Launch contributor recognition'],
-      strategicMoves: ['Develop certification program', 'Build strategic partnerships'],
-      resourceNeeds: ['DevRel/Community manager', 'Content creation budget']
+      quickWins: current < 500 ? ['Optimize README with clear use cases', 'Create video tutorials', 'Engage developer community'] : ['Launch contributor recognition'],
+      strategicMoves: ['Develop integration strategy', 'Build strategic partnerships', 'Position as complementary solution'],
+      resourceNeeds: ['DevRel/Community manager', 'Content creation budget', 'Developer ecosystem partnerships']
     },
     trend: Math.random() > 0.3 ? 'up' : 'stable',
     trendPercentage: Math.floor(Math.random() * 30) + 5
@@ -88,17 +84,17 @@ const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, 
   const analyzeForks = (current: number): MetricAnalysis => ({
     currentValue: current,
     benchmark: benchmarkData.forks,
-    maturityContext: 'For 9-month standards, 50-200 forks shows active technical interest.',
+    maturityContext: 'For 9-month standards, 50-200 forks shows active technical interest. Leading protocols have thousands of forks.',
     analysis: {
       status: current > 100 ? 'good' : current > 50 ? 'concerning' : 'critical',
-      explanation: current > 100 ? 'Healthy fork activity.' : 'Low fork activity may indicate barriers.',
-      rootCauses: current < 100 ? ['Complex setup process', 'Limited documentation'] : ['Clear extension points'],
-      opportunities: ['Create fork showcase gallery', 'Develop extension marketplace']
+      explanation: current > 100 ? 'Healthy fork activity.' : `Low fork activity. Need technical evangelism and better extension documentation.`,
+      rootCauses: current < 100 ? ['Complex setup process', 'Limited documentation', 'Unclear extension points'] : ['Clear extension points'],
+      opportunities: ['Create fork showcase gallery', 'Develop extension marketplace', 'Build integration examples']
     },
     recommendations: {
-      quickWins: current < 100 ? ['Create customization tutorials', 'Document extension points'] : ['Launch fork showcase'],
-      strategicMoves: ['Build plugin ecosystem', 'Create certification for extensions'],
-      resourceNeeds: ['Technical documentation writer', 'Developer experience improvements']
+      quickWins: current < 100 ? ['Create customization tutorials', 'Document extension points', 'Simplify setup'] : ['Launch fork showcase'],
+      strategicMoves: ['Build plugin ecosystem', 'Create certification for extensions', 'Position as extensible solution'],
+      resourceNeeds: ['Technical documentation writer', 'Developer experience improvements', 'Community building']
     },
     trend: Math.random() > 0.4 ? 'up' : 'stable',
     trendPercentage: Math.floor(Math.random() * 25) + 3
@@ -107,16 +103,16 @@ const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, 
   const analyzeContributors = (current: number): MetricAnalysis => ({
     currentValue: current,
     benchmark: benchmarkData.contributors,
-    maturityContext: 'For 9-month OSS standards, 8-20 contributors indicates sustainable growth.',
+    maturityContext: 'For 9-month OSS standards, 8-20 contributors indicates sustainable growth. Leading protocols have hundreds of contributors.',
     analysis: {
       status: current > 15 ? 'excellent' : current > 8 ? 'good' : 'concerning',
-      explanation: current > 15 ? 'Excellent contributor base.' : 'Contributor base below sustainable levels.',
-      rootCauses: current < 8 ? ['High barrier to entry', 'Limited good first issues'] : ['Welcoming onboarding'],
-      opportunities: ['Expand contributor diversity', 'Create mentorship program']
+      explanation: current > 15 ? 'Excellent contributor base.' : `Need stronger community building and contributor engagement.`,
+      rootCauses: current < 8 ? ['High barrier to entry', 'Limited good first issues', 'Insufficient onboarding resources'] : ['Welcoming onboarding'],
+      opportunities: ['Expand contributor diversity', 'Create mentorship program', 'Build inclusive community']
     },
     recommendations: {
-      quickWins: current < 8 ? ['Add good first issues', 'Create welcome bot'] : ['Implement recognition system'],
-      strategicMoves: ['Build corporate sponsorship', 'Create certification program'],
+      quickWins: current < 8 ? ['Add good first issues', 'Create welcome bot', 'Improve documentation'] : ['Implement recognition system'],
+      strategicMoves: ['Build community program', 'Create certification program', 'Partner with educational institutions'],
       resourceNeeds: ['Community manager', 'Technical writing', 'Contributor tools']
     },
     trend: Math.random() > 0.2 ? 'up' : 'stable',
@@ -172,9 +168,9 @@ const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, 
 
   const metricItems = [
     { key: 'stars', title: 'Stars', icon: <Target className="w-4 h-4" />, value: stars },
+    { key: 'downloads', title: 'Downloads', icon: <Zap className="w-4 h-4" />, value: downloads },
     { key: 'forks', title: 'Forks', icon: <BarChart3 className="w-4 h-4" />, value: forks },
-    { key: 'contributors', title: 'Contributors', icon: <Users className="w-4 h-4" />, value: contributors },
-    { key: 'downloads', title: 'Downloads', icon: <Zap className="w-4 h-4" />, value: downloads }
+    { key: 'contributors', title: 'Contributors', icon: <Users className="w-4 h-4" />, value: contributors }
   ];
 
   if (loading) {
@@ -249,20 +245,7 @@ const MetricsAnalysisCompact: React.FC<MetricsAnalysisProps> = ({ stars, forks, 
                       </ul>
                     </div>
                     
-                    <div>
-                      <h4 className="text-xs font-medium text-gray-900 mb-1">Industry Context</h4>
-                      <div className="text-xs text-gray-600">
-                        <div className="flex justify-between">
-                          <span>Industry Avg:</span>
-                          <span className="font-medium">{analysis.benchmark.industryAverage.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>vs A2A:</span>
-                          <span className="font-medium">{analysis.benchmark.a2a.toLocaleString()}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                                      </div>
                 )}
               </div>
             );

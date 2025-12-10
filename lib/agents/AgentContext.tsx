@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { agentSimulator } from './simulator';
+// import { agentSimulator } from './simulator';
 import { 
   Agent, 
   WorkflowExecution, 
@@ -163,52 +163,52 @@ export function AgentProvider({ children }: { children: ReactNode }) {
         }
       ];
 
-      agents.forEach(agent => agentSimulator.registerAgent(agent));
+      // agents.forEach(agent => agentSimulator.registerAgent(agent));
       dispatch({ type: 'SET_AGENTS', payload: agents });
 
       // Register workflows
-      const { welcomeWorkflow } = require('./workflows/welcome-workflow');
-      const { contributionWorkflow } = require('./workflows/contribution-workflow');
-      const { triageWorkflow } = require('./workflows/triage-workflow');
+      // const { welcomeWorkflow } = require('./workflows/welcome-workflow');
+      // const { contributionWorkflow } = require('./workflows/contribution-workflow');
+      // const { triageWorkflow } = require('./workflows/triage-workflow');
 
-      agentSimulator.registerWorkflow(welcomeWorkflow);
-      agentSimulator.registerWorkflow(contributionWorkflow);
-      agentSimulator.registerWorkflow(triageWorkflow);
+      // agentSimulator.registerWorkflow(welcomeWorkflow);
+      // agentSimulator.registerWorkflow(contributionWorkflow);
+      // agentSimulator.registerWorkflow(triageWorkflow);
     };
 
     initializeAgents();
 
     // Set up event listener
-    agentSimulator.onEvent((event: SimulationEvent) => {
-      dispatch({ type: 'ADD_EVENT', payload: event });
-      refreshData();
-    });
+    // agentSimulator.onEvent((event: SimulationEvent) => {
+    //   dispatch({ type: 'ADD_EVENT', payload: event });
+    //   refreshData();
+    // });
 
     // Initial data refresh
     refreshData();
   }, []);
 
   const refreshData = () => {
-    dispatch({ type: 'SET_ACTIVE_WORKFLOWS', payload: agentSimulator.getActiveWorkflows() });
-    dispatch({ type: 'SET_PENDING_APPROVALS', payload: agentSimulator.getPendingApprovals() });
-    dispatch({ type: 'SET_AGENTS', payload: agentSimulator.getAllAgents() });
+    // dispatch({ type: 'SET_ACTIVE_WORKFLOWS', payload: agentSimulator.getActiveWorkflows() });
+    // dispatch({ type: 'SET_PENDING_APPROVALS', payload: agentSimulator.getPendingApprovals() });
+    // dispatch({ type: 'SET_AGENTS', payload: agentSimulator.getAllAgents() });
   };
 
   const actions = {
     startSimulation: (speed: number = 1) => {
-      agentSimulator.startSimulation(speed);
+      // agentSimulator.startSimulation(speed);
       dispatch({ type: 'SET_SIMULATION_RUNNING', payload: true });
       dispatch({ type: 'SET_SIMULATION_SPEED', payload: speed });
     },
 
     stopSimulation: () => {
-      agentSimulator.stopSimulation();
+      // agentSimulator.stopSimulation();
       dispatch({ type: 'SET_SIMULATION_RUNNING', payload: false });
     },
 
     startWorkflow: async (agentId: string, workflowId: string, contributor: ContributorInfo, repository: RepositoryInfo) => {
       try {
-        await agentSimulator.startWorkflow(agentId, workflowId, contributor, repository);
+        // await agentSimulator.startWorkflow(agentId, workflowId, contributor, repository);
         refreshData();
       } catch (error) {
         console.error('Failed to start workflow:', error);
@@ -217,7 +217,7 @@ export function AgentProvider({ children }: { children: ReactNode }) {
 
     respondToApproval: async (approvalId: string, response: 'approve' | 'reject', comments?: string) => {
       try {
-        await agentSimulator.respondToApproval(approvalId, response, comments);
+        // await agentSimulator.respondToApproval(approvalId, response, comments);
         refreshData();
       } catch (error) {
         console.error('Failed to respond to approval:', error);

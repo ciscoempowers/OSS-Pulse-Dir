@@ -302,12 +302,12 @@ export default function Dashboard() {
       name: 'Community Growth',
       type: 'triage',
       status: 'idle',
-      description: 'Analyzes contribution and developer growth patterns across the directory ecosystem',
+      description: 'Comprehensive community management with strategic planning, triage automation, and maintainer support',
       progress: 0,
       metrics: {
-        totalWorkflows: 15,
-        successRate: 92.0,
-        averageCompletionTime: 3.5
+        totalWorkflows: 10,
+        successRate: 94.2,
+        averageCompletionTime: 3.8
       }
     }
   ]);
@@ -358,6 +358,18 @@ export default function Dashboard() {
           type: 'automated',
           status: 'pending',
           approvalOptions: []
+        },
+        {
+          id: 'welcome-3.5',
+          name: 'Maintainer Code Review',
+          description: 'Maintainer approval required for contributor code push',
+          type: 'human_approval',
+          status: 'pending',
+          approvalOptions: [
+            { id: 'approve', label: 'Approve Code Push', description: 'Code meets standards, approve push', action: 'approve' },
+            { id: 'request_changes', label: 'Request Changes', description: 'Code needs revisions before merge', action: 'modify' },
+            { id: 'reject', label: 'Reject Submission', description: 'Code not ready, provide feedback', action: 'reject' }
+          ]
         },
         {
           id: 'welcome-4',
@@ -452,8 +464,8 @@ export default function Dashboard() {
         },
         {
           id: 'integration-6',
-          name: 'Weekly WG Digest Preparation',
-          description: 'Prepare weekly working group notification with new developer profiles and integration statuses',
+          name: 'Troubleshooting & Debugging',
+          description: 'Agent monitors common failure points during onboarding, proactively suggests solutions to errors, and learns from successful vs failed onboarding attempts',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
@@ -483,83 +495,95 @@ export default function Dashboard() {
       return [
         {
           id: 'community-1',
-          name: 'Ecosystem-Wide Data Collection',
-          description: 'Collect contribution and growth data across all directory projects (dir, dir-spec, oasf-sdk)',
+          name: 'Strategic Planning & Prioritization',
+          description: 'Agent analyzes project health metrics: issue/PR velocity, contributor activity, code quality trends, community engagement. Identifies bottlenecks and emerging problems before they become critical. Suggests quarterly/monthly goals based on community needs and maintainer capacity.',
           type: 'data_collection',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'community-2',
-          name: 'Cross-Project Growth Analysis',
-          description: 'Analyze growth patterns and contributor movement between directory projects',
-          type: 'human_approval',
+          name: 'Issue & PR Triage Automation',
+          description: 'Agent performs first-pass triage: categorizes and labels new issues, detects duplicates, assesses severity and impact, identifies security-critical items. Suggests which maintainer should handle based on expertise and workload.',
+          type: 'automated',
           status: 'pending',
           approvalOptions: [
-            { id: 'approve', label: 'Publish Analysis', description: 'Share ecosystem insights', action: 'approve' },
-            { id: 'modify', label: 'Adjust Analysis', description: 'Modify analysis approach', action: 'modify' },
-            { id: 'internal', label: 'Internal Only', description: 'For working group review', action: 'skip' }
+            { id: 'approve', label: 'Apply Triage', description: 'Execute triage decisions', action: 'approve' },
+            { id: 'modify', label: 'Adjust Categories', description: 'Modify triage approach', action: 'modify' },
+            { id: 'manual', label: 'Manual Review', description: 'Handle manually', action: 'skip' }
           ]
         },
         {
           id: 'community-3',
-          name: 'Developer Journey Mapping',
-          description: 'Map developer journeys across directory ecosystem projects and integrations',
+          name: 'Workload Balancing & Delegation',
+          description: 'Agent monitors each maintainer\'s active workload: open PR reviews, assigned issues, response times. Suggests redistributions when imbalanced. Identifies when to recruit new maintainers or create "on-call" rotations.',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'community-4',
-          name: 'Adoption Pattern Analysis',
-          description: 'Identify adoption patterns and integration success across different use cases',
+          name: 'Code Review Orchestration',
+          description: 'Agent pre-reviews PRs for: style compliance, test coverage, breaking changes, security vulnerabilities, documentation completeness. Routes to appropriate reviewers based on code area and availability.',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'community-5',
-          name: 'Ecosystem Engagement Metrics',
-          description: 'Analyze cross-project engagement and identify ecosystem growth opportunities',
-          type: 'data_collection',
+          name: 'Release Management',
+          description: 'Agent prepares release candidates: aggregates changes since last release, generates changelog from commits/PRs, identifies breaking changes, checks dependency updates. Runs comprehensive test suites and suggests release timing.',
+          type: 'human_approval',
           status: 'pending',
-          approvalOptions: []
+          approvalOptions: [
+            { id: 'release', label: 'Release Now', description: 'Proceed with release', action: 'approve' },
+            { id: 'hold', label: 'Hold Release', description: 'Wait for better timing', action: 'modify' },
+            { id: 'rollback', label: 'Rollback Plan', description: 'Prepare rollback', action: 'skip' }
+          ]
         },
         {
           id: 'community-6',
-          name: 'Contributor Blocker Detection',
-          description: 'Detect patterns of blockers for contributors and developers based on behavioral data',
+          name: 'Community Health Monitoring',
+          description: 'Agent tracks sentiment in discussions and issues. Identifies toxic behavior or code of conduct violations early. Highlights positive contributors for recognition. Measures response times to community questions.',
           type: 'data_collection',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'community-7',
-          name: 'Weekly Blocker Analysis Report',
-          description: 'Send weekly blocker analysis to working group in Slack with recommendations',
+          name: 'Knowledge Management',
+          description: 'Agent identifies gaps in documentation based on: repeated questions in issues, common PR mistakes, support requests. Suggests documentation updates or new guides. Creates FAQ entries from resolved issues.',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'community-8',
-          name: 'Knowledge Sharing Recommendations',
-          description: 'Recommend knowledge sharing opportunities and community initiatives',
+          name: 'Meeting Facilitation',
+          description: 'Agent prepares meeting agendas based on: urgent items, blocked decisions, scheduled topics. Summarizes discussions and action items. Tracks action item completion and suggests when async communication would be more efficient.',
           type: 'automated',
           status: 'pending',
           approvalOptions: []
         },
         {
           id: 'community-9',
-          name: 'Ecosystem Health Report',
-          description: 'Generate comprehensive ecosystem health and growth report',
+          name: 'Maintainer Onboarding & Development',
+          description: 'Agent identifies contributor candidates for maintainer promotion based on: contribution quality and consistency, community interaction, technical expertise growth. Creates personalized onboarding plans for new maintainers.',
           type: 'human_approval',
           status: 'pending',
           approvalOptions: [
-            { id: 'publish', label: 'Publish Report', description: 'Share with community', action: 'approve' },
-            { id: 'draft', label: 'Save as Draft', description: 'Refine before publishing', action: 'modify' },
-            { id: 'internal', label: 'Internal Only', description: 'For internal review', action: 'skip' }
+            { id: 'promote', label: 'Promote to Maintainer', description: 'Grant maintainer access', action: 'approve' },
+            { id: 'mentor', label: 'Start Mentorship', description: 'Begin mentorship program', action: 'modify' },
+            { id: 'observe', label: 'Continue Observation', description: 'Monitor further', action: 'skip' }
           ]
+        },
+        {
+          id: 'community-10',
+          name: 'Security & Compliance',
+          description: 'Agent monitors for: dependency vulnerabilities, security issue reports, license compliance, expired credentials/tokens. Coordinates security patch releases and maintains security disclosure process.',
+          type: 'automated',
+          status: 'pending',
+          approvalOptions: []
         }
       ];
       default:
@@ -693,6 +717,17 @@ export default function Dashboard() {
           estimated_time: '2-3 hours',
           mentor_assigned: 'alice'
         };
+      case 'welcome-3.5':
+        return {
+          code_submitted: true,
+          files_changed: 3,
+          lines_added: 45,
+          lines_removed: 12,
+          test_coverage: 85,
+          code_quality_score: 8.5,
+          maintainer_reviewer: 'alice',
+          review_status: 'pending'
+        };
       case 'welcome-4':
         return {
           badge_awarded: 'First Contribution',
@@ -766,14 +801,13 @@ export default function Dashboard() {
         };
       case 'integration-6':
         return {
-          digest_prepared: true,
-          new_developers: 5,
-          integration_statuses: {
-            completed: 3,
-            in_progress: 2,
-            blocked: 0
-          },
-          follow_up_recommendations: 8
+          failure_points_monitored: ['setup_errors', 'dependency_conflicts', 'permission_issues', 'api_failures'],
+          solutions_suggested: 12,
+          success_rate_improvement: 0.25,
+          learning_patterns: {
+            common_errors: ['missing_env_vars', 'incorrect_permissions', 'version_mismatches'],
+            successful_patterns: ['automated_setup', 'quick_troubleshoot', 'community_help']
+          }
         };
       case 'integration-7':
         return {
@@ -799,83 +833,117 @@ export default function Dashboard() {
       // Community Growth
       case 'community-1':
         return {
-          total_integrations: 156,
-          active_projects: 89,
-          new_integrations_this_month: 12,
-          retention_rate: 0.87
+          health_metrics: {
+            issue_velocity: 89,
+            pr_velocity: 45,
+            contributor_activity: 0.78,
+            code_quality_trend: 'improving'
+          },
+          bottlenecks_identified: ['review_delays', 'documentation_gaps'],
+          quarterly_goals: ['reduce_pr_time', 'improve_docs', 'recruit_reviewers'],
+          maintainer_capacity: 0.85
         };
       case 'community-2':
         return {
-          contributions_analyzed: 234,
-          top_contributors: ['alice', 'bob', 'charlie'],
-          community_health_score: 8.5,
-          growth_trend: 'positive'
+          triage_performed: {
+            issues_categorized: 23,
+            duplicates_detected: 5,
+            security_critical: 2,
+            severity_assessed: 18
+          },
+          maintainer_suggestions: {
+            backend: ['alice', 'bob'],
+            frontend: ['charlie', 'diana'],
+            docs: ['eve']
+          },
+          urgent_items: 3,
+          auto_responses_sent: 8
         };
       case 'community-3':
         return {
-          success_stories: [
-            'Company X reduced integration time by 60%',
-            'Startup Y built ecosystem on directory standard',
-            'Enterprise Z adopted across 5 departments'
-          ],
-          impact_metrics: {
-            time_saved: '4500 hours',
-            cost_reduction: '$2.3M',
-            developer_satisfaction: 9.2
-          }
+          workload_balance: {
+            alice: {reviews: 3, issues: 5, response_time: '2h'},
+            bob: {reviews: 7, issues: 2, response_time: '1h'},
+            charlie: {reviews: 1, issues: 8, response_time: '4h'}
+          },
+          redistribution_suggested: true,
+          new_maintainers_needed: 1,
+          oncall_rotations: ['alice-bob', 'charlie-diana']
+        };
+      case 'community-4':
+        return {
+          prereviews_completed: 12,
+          issues_found: {
+            style_violations: 3,
+            test_coverage: 2,
+            breaking_changes: 1,
+            security_vulnerabilities: 0,
+            documentation_gaps: 4
+          },
+          reviewer_assignments: {
+            alice: 4, bob: 3, charlie: 2, diana: 3
+          },
+          stalled_prs_nudged: 2
         };
       case 'community-5':
         return {
-          engagement_metrics: {
-            github_stars: 1250,
-            forks: 234,
-            issues_resolved: 89,
-            pr_merged: 45
+          release_prepared: {
+            version: 'v2.1.0',
+            changes_count: 47,
+            breaking_changes: 2,
+            dependency_updates: 5
           },
-          growth_opportunities: ['documentation', 'examples', 'plugins']
+          changelog_generated: true,
+          test_results: 'passing',
+          release_timing_suggested: 'next_tuesday'
         };
       case 'community-6':
         return {
-          blocker_patterns: {
-            setup_issues: 0.35,
-            documentation_gaps: 0.28,
-            api_complexity: 0.22,
-            tooling_barriers: 0.15
+          sentiment_analysis: {
+            positive: 0.72,
+            neutral: 0.23,
+            toxic: 0.05
           },
-          affected_users: 45,
-          severity_levels: {
-            high: 8,
-            medium: 23,
-            low: 14
+          code_of_conduct_flags: 2,
+          positive_contributors: ['alice', 'bob', 'charlie'],
+          response_times: {
+            average: '4h',
+            target: '2h'
           }
         };
       case 'community-7':
         return {
-          weekly_report_sent: true,
-          slack_channel: '#wg-ecosystem',
-          blocker_summary: {
-            new_blockers: 5,
-            resolved_blockers: 12,
-            recurring_patterns: 3
-          },
-          recommendations_sent: 8
+          documentation_gaps: [
+            'api_examples', 'deployment_guide', 'troubleshooting'
+          ],
+          faq_entries_created: 8,
+          common_issues_identified: 15,
+          guide_updates_suggested: 3
         };
       case 'community-8':
         return {
-          knowledge_sharing_opportunities: [
-            'weekly office hours',
-            'contributor spotlight',
-            'integration patterns library'
-          ],
-          community_initiatives: 4,
-          engagement_boost: 0.23
+          agenda_prepared: true,
+          urgent_items: 3,
+          blocked_decisions: 2,
+          action_items_tracked: 7,
+          async_suggestions: 4
         };
       case 'community-9':
         return {
-          ecosystem_health: 9.1,
-          adoption_rate: 0.73,
-          community_satisfaction: 8.8,
-          recommendations: ['expand documentation', 'more enterprise features']
+          maintainer_candidates: ['alice', 'bob'],
+          onboarding_plans: {
+            alice: ['permissions', 'review_guidelines', 'release_process'],
+            bob: ['security_training', 'community_management']
+          },
+          mentorship_pairs: [['charlie', 'alice'], ['diana', 'bob']]
+        };
+      case 'community-10':
+        return {
+          vulnerabilities_found: 3,
+          security_patches_coordinated: 2,
+          license_compliance: 'compliant',
+          credentials_monitored: 12,
+          disclosure_timeline: 'on_track'
         };
       
       default:
@@ -948,14 +1016,7 @@ export default function Dashboard() {
     }
   };
 
-  const [contributorGrowth, setContributorGrowth] = useState<{month: string; contributors: number}[]>([
-    { month: 'Jul', contributors: 3 },
-    { month: 'Aug', contributors: 6 },
-    { month: 'Sep', contributors: 8 },
-    { month: 'Oct', contributors: 9 },
-    { month: 'Nov', contributors: 11 },
-    { month: 'Dec', contributors: 12 }
-  ]);
+  const [contributorGrowth, setContributorGrowth] = useState<{month: string; contributors: number}[]>([]);
   const [detailedAnalytics, setDetailedAnalytics] = useState<{
     newContributorsPerMonth: {month: string; newContributors: number}[];
     retentionRates: {month: string; retentionRate: number}[];
@@ -982,22 +1043,8 @@ export default function Dashboard() {
     geographicDistribution: {country: string; percentage: number}[];
     industryBreakdown: {industry: string; count: number}[];
   }>({
-    downloadTrends: [
-      { month: 'Jul', downloads: 245 },
-      { month: 'Aug', downloads: 312 },
-      { month: 'Sep', downloads: 389 },
-      { month: 'Oct', downloads: 467 },
-      { month: 'Nov', downloads: 523 },
-      { month: 'Dec', downloads: 589 }
-    ],
-    netNewDownloads: [
-      { month: 'Jul', downloads: 245 },
-      { month: 'Aug', downloads: 67 },
-      { month: 'Sep', downloads: 77 },
-      { month: 'Oct', downloads: 78 },
-      { month: 'Nov', downloads: 56 },
-      { month: 'Dec', downloads: 66 }
-    ],
+    downloadTrends: [],
+    netNewDownloads: [],
     geographicDistribution: [],
     industryBreakdown: []
   });
@@ -1040,43 +1087,15 @@ export default function Dashboard() {
   const [contributorView, setContributorView] = useState<'cumulative' | 'net-new'>('net-new');
   const [starsView, setStarsView] = useState<'cumulative' | 'net-new'>('net-new');
   
-  const [starsTrends, setStarsTrends] = useState<{month: string; stars: number}[]>([
-    { month: 'Jul', stars: 150 },
-    { month: 'Aug', stars: 180 },
-    { month: 'Sep', stars: 220 },
-    { month: 'Oct', stars: 265 },
-    { month: 'Nov', stars: 310 },
-    { month: 'Dec', stars: 355 }
-  ]);
+  const [starsTrends, setStarsTrends] = useState<{month: string; stars: number}[]>([]);
   
-  const [netNewStarsTrends, setNetNewStarsTrends] = useState<{month: string; newStars: number}[]>([
-    { month: 'Jul', newStars: 15 },
-    { month: 'Aug', newStars: 30 },
-    { month: 'Sep', newStars: 40 },
-    { month: 'Oct', newStars: 45 },
-    { month: 'Nov', newStars: 45 },
-    { month: 'Dec', newStars: 45 }
-  ]);
+  const [netNewStarsTrends, setNetNewStarsTrends] = useState<{month: string; newStars: number}[]>([]);
 
   const [forksView, setForksView] = useState<'cumulative' | 'net-new'>('net-new');
   
-  const [forksTrends, setForksTrends] = useState<{month: string; forks: number}[]>([
-    { month: 'Jul', forks: 45 },
-    { month: 'Aug', forks: 58 },
-    { month: 'Sep', forks: 72 },
-    { month: 'Oct', forks: 89 },
-    { month: 'Nov', forks: 105 },
-    { month: 'Dec', forks: 124 }
-  ]);
-
-  const [netNewForksTrends, setNetNewForksTrends] = useState<{month: string; newForks: number}[]>([
-    { month: 'Jul', newForks: 8 },
-    { month: 'Aug', newForks: 13 },
-    { month: 'Sep', newForks: 14 },
-    { month: 'Oct', newForks: 17 },
-    { month: 'Nov', newForks: 16 },
-    { month: 'Dec', newForks: 19 }
-  ]);
+  const [forksTrends, setForksTrends] = useState<{month: string; forks: number}[]>([]);
+  
+  const [netNewForksTrends, setNetNewForksTrends] = useState<{month: string; newForks: number}[]>([]);
 
 
   const ganttTasks = useMemo(() => createGanttTasks(milestones), [milestones]);
@@ -1109,6 +1128,39 @@ export default function Dashboard() {
         if (data.dependents) setViralityData(data.dependents);
         if (data.adoption) setAdoptionMetrics(data.adoption);
         if (data.devExperience) setDevExperienceMetrics(data.devExperience);
+        
+        // Calculate real trends from GitHub API data
+        if (data.stars && data.contributorGrowth) {
+          // Use real historical data from API
+          setStarsTrends(data.starsGrowth || []);
+          setForksTrends(data.forksGrowth || []);
+          
+          // Calculate net new from real data
+          const netNewStars = (data.starsGrowth || []).map((item: any, index: number) => ({
+            month: item.month,
+            newStars: index === 0 ? item.stars : Math.max(0, item.stars - (data.starsGrowth[index - 1]?.stars || 0))
+          }));
+          setNetNewStarsTrends(netNewStars);
+          
+          const netNewForks = (data.forksGrowth || []).map((item: any, index: number) => ({
+            month: item.month,
+            newForks: index === 0 ? item.forks : Math.max(0, item.forks - (data.forksGrowth[index - 1]?.forks || 0))
+          }));
+          setNetNewForksTrends(netNewForks);
+          
+          // Update adoption metrics with real downloads data (even if empty)
+          if (data.downloadsGrowth) {
+            const netNewDownloads = data.downloadsGrowth.map((item: any, index: number) => ({
+              month: item.month,
+              downloads: index === 0 ? item.downloads : Math.max(0, item.downloads - (data.downloadsGrowth[index - 1]?.downloads || 0))
+            }));
+            setAdoptionMetrics(prev => ({
+              ...prev,
+              downloadTrends: data.downloadsGrowth || [],
+              netNewDownloads: netNewDownloads
+            }));
+          }
+        }
         
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -1205,6 +1257,8 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
+        
+                
         {error && (
           <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
             <div className="flex">
@@ -1233,6 +1287,76 @@ export default function Dashboard() {
             data srcs: agntcy GH repos - dir, dir-spec, oasf-sdk
           </div>
         </header>
+
+        {/* Venture KPIs Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Venture KPI's</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Directory v1.0 launch */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Directory v1.0 launch</h3>
+                <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">On Track</span>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Target</span>
+                  <span className="text-sm font-medium text-gray-900">v1.0 launch in Feb 2026</span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Progress</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-32 bg-gray-200 rounded-full h-2">
+                      <div className="bg-green-600 h-2 rounded-full" style={{width: '75%'}}></div>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">75% complete</span>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Dependency</span>
+                  <span className="text-sm font-medium text-gray-900">A2A v1.0 launch</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Federation Directory Deployments */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Federation Directory Deployments</h3>
+                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-medium rounded-full">Pending</span>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Target</span>
+                  <span className="text-sm font-medium text-gray-900">2 federation deployments by April 2036</span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Actual</span>
+                  <span className="text-sm font-medium text-gray-900">0 Members</span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Dependency</span>
+                  <span className="text-sm font-medium text-gray-900">A2A v1.0 and Dir v1.0 launches</span>
+                </div>
+                
+                {/* Grey breaker line */}
+                <div className="border-t border-gray-300 pt-3"></div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Target Companies</span>
+                  <span className="text-sm font-medium text-gray-900">Dell, Google, Oracle, Redhat</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
       {/* Community Engagement Header */}
       <div className="mb-8">
@@ -1298,7 +1422,9 @@ export default function Dashboard() {
             </div>
             <div className="text-gray-600 text-sm font-medium">Downloads</div>
             <div className="text-xs text-gray-500 mt-1">
-              +{repoStats.downloadsThisMonth || 0} this month
+              +{adoptionMetrics.netNewDownloads.length > 0 
+                ? adoptionMetrics.netNewDownloads[adoptionMetrics.netNewDownloads.length - 1].downloads 
+                : repoStats.downloadsThisMonth || 0} this month
             </div>
           </div>
         </Card>
@@ -1326,66 +1452,9 @@ export default function Dashboard() {
 
       {/* Community Engagement Graphs */}
       <div id="community" className="mb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left: Graphs (2 columns) */}
-          <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Top Left: Contributor Growth */}
-          <Card>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-black">Contributor Growth</h3>
-              <div className="flex bg-gray-100 rounded-lg p-1">
-                <button
-                  onClick={() => setContributorView('net-new')}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                    contributorView === 'net-new'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Net New
-                </button>
-                <button
-                  onClick={() => setContributorView('cumulative')}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                    contributorView === 'cumulative'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Cumulative
-                </button>
-              </div>
-            </div>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height={250} minWidth={300}>
-                <LineChart data={contributorView === 'cumulative' ? contributorGrowth : 
-    (detailedAnalytics.newContributorsPerMonth.length > 0 ? detailedAnalytics.newContributorsPerMonth :
-      contributorGrowth.map((item, index) => {
-        if (index === 0) return { month: item.month, newContributors: item.contributors };
-        const previousContributors = contributorGrowth[index - 1].contributors;
-        return { month: item.month, newContributors: item.contributors - previousContributors };
-      })
-    )
-  }>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line 
-                    type="monotone" 
-                    dataKey={contributorView === 'cumulative' ? 'contributors' : 'newContributors'} 
-                    stroke={contributorView === 'cumulative' ? '#10b981' : '#3b82f6'} 
-                    strokeWidth={2}
-                    dot={{ fill: contributorView === 'cumulative' ? '#059669' : '#2563eb', r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-
-          {/* Top Middle: Stars Growth */}
+        {/* Top Row: 3 Graphs - Stars, Downloads, Forks */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Stars Growth */}
           <Card>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-black">Stars Growth</h3>
@@ -1432,7 +1501,7 @@ export default function Dashboard() {
             </div>
           </Card>
 
-          {/* Top Right: Forks Growth */}
+          {/* Forks Growth */}
           <Card>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-black">Forks Growth</h3>
@@ -1479,32 +1548,7 @@ export default function Dashboard() {
             </div>
           </Card>
 
-          {/* Bottom Left: Contributor Retention */}
-          <Card>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-black">Contributor Retention Rates</h3>
-            </div>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height={250} minWidth={300}>
-                <LineChart data={detailedAnalytics.retentionRates}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line 
-                    type="monotone" 
-                    dataKey="retentionRate" 
-                    stroke="#8b5cf6" 
-                    strokeWidth={2}
-                    dot={{ fill: '#7c3aed', r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-
-          {/* Bottom Middle: Download Trends */}
+          {/* Download Trends */}
           <Card>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-black">Download Trends</h3>
@@ -1535,28 +1579,14 @@ export default function Dashboard() {
               <ResponsiveContainer width="100%" height={250} minWidth={300}>
                 <LineChart 
                   data={downloadView === 'net-new' ? 
-    (adoptionMetrics.netNewDownloads.length > 0 ? adoptionMetrics.netNewDownloads : [
-      { month: 'Jul', downloads: 245 },
-      { month: 'Aug', downloads: 67 },
-      { month: 'Sep', downloads: 77 },
-      { month: 'Oct', downloads: 78 },
-      { month: 'Nov', downloads: 56 },
-      { month: 'Dec', downloads: 66 }
-    ]) : 
-    (adoptionMetrics.downloadTrends.length > 0 ? adoptionMetrics.downloadTrends : [
-      { month: 'Jul', downloads: 245 },
-      { month: 'Aug', downloads: 312 },
-      { month: 'Sep', downloads: 389 },
-      { month: 'Oct', downloads: 467 },
-      { month: 'Nov', downloads: 523 },
-      { month: 'Dec', downloads: 589 }
-    ])
-  }
+                    adoptionMetrics.netNewDownloads : 
+                    adoptionMetrics.downloadTrends
+                  }
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <Tooltip formatter={(value) => [Number(value).toLocaleString(), 'Downloads']} />
+                  <Tooltip />
                   <Line 
                     type="monotone" 
                     dataKey="downloads" 
@@ -1569,23 +1599,82 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
           </Card>
-            </div>
+
           </div>
-          
-          {/* Right: Compact Metrics Analysis */}
-          <div className="lg:col-span-1">
+
+        {/* Bottom Row: Contributor Graph and Metrics Analysis */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Contributor Growth */}
+          <div>
             <Card>
-              <div className="p-4">
-                <h3 className="text-sm font-semibold text-gray-900">Metrics Analysis</h3>
-                <p className="text-xs text-gray-500">Temporarily disabled</p>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-black">Contributor Growth</h3>
+                <div className="flex bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setContributorView('net-new')}
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                      contributorView === 'net-new'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Net New
+                  </button>
+                  <button
+                    onClick={() => setContributorView('cumulative')}
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                      contributorView === 'cumulative'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Cumulative
+                  </button>
+                </div>
+              </div>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height={250} minWidth={300}>
+                  <LineChart data={contributorView === 'cumulative' ? contributorGrowth : detailedAnalytics.newContributorsPerMonth}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line 
+                      type="monotone" 
+                      dataKey={contributorView === 'cumulative' ? 'contributors' : 'newContributors'} 
+                      stroke={contributorView === 'cumulative' ? '#10b981' : '#3b82f6'} 
+                      strokeWidth={2}
+                      dot={{ fill: contributorView === 'cumulative' ? '#059669' : '#2563eb', r: 4 }}
+                      activeDot={{ r: 6 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </Card>
+            <div className="mt-12 px-4">
+              <p className="text-xs text-gray-500 italic">
+                Note: Contributor data is accurate from April 2025 onwards
+              </p>
+            </div>
+          </div>
+
+          {/* Metrics Analysis - Wider (2 columns) */}
+          <div className="lg:col-span-2">
+            <MetricsAnalysisCompact 
+              stars={repoStats.stars}
+              forks={repoStats.forks}
+              contributors={repoStats.contributors}
+              downloads={adoptionMetrics.downloadTrends.length > 0 
+                ? adoptionMetrics.downloadTrends[adoptionMetrics.downloadTrends.length - 1].downloads 
+                : repoStats.downloads
+              }
+            />
           </div>
         </div>
       </div>
 
       {/* Developer Experience Metrics */}
-      <Card className="mb-8">
+      <Card className="mb-12 mt-12">
         <h3 className="text-xl font-bold text-black mb-4">Developer Experience Metrics</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="text-center">
@@ -1955,7 +2044,7 @@ export default function Dashboard() {
             <Activity className="w-4 h-4 mr-2" />
             Simulated Agentic Workflow
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">AI Agent Simulation System</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">AGNTCY OSS Pulse Agents</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Experience automated OSS contributor onboarding through intelligent AI agents. 
             Watch as they analyze profiles, assign mentors, and guide contributions in real-time.
