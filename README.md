@@ -2,6 +2,8 @@
 
 A comprehensive project tracking and community management dashboard for open source projects. Built with Next.js, this dashboard provides real-time insights into project health, contributor activity, milestone progress, and community engagement through GitHub API integration and AI-powered workflow automation.
 
+The demo is deployed here: https://oss-pulse-dir-v2.vercel.app/
+
 ## Features
 
 - **Project Health Monitoring**: Track repository activity, issue resolution rates, and pull request metrics
