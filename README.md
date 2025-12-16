@@ -15,9 +15,6 @@ The demo is deployed here: https://oss-pulse-dir-v2.vercel.app/
 - **Simulated Agentic Workflows**: Simulated agentic workflows to boost community engagement
 - **Responsive Design**: Mobile-friendly interface built with Tailwind CSS and Tremor UI components
 
-## Screenshots
-
-*(Add screenshots of your dashboard here)*
 
 ## Technology Stack
 
