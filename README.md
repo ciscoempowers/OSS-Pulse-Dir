@@ -2,38 +2,52 @@
 
 A comprehensive project tracking and community management dashboard for open source projects. Built with Next.js, this dashboard provides real-time insights into project health, contributor activity, milestone progress, and community engagement through GitHub API integration and AI-powered workflow automation.
 
-## Getting Started
+## Features
 
-First, run the development server:
+- **Project Health Monitoring**: Track repository activity, issue resolution rates, and pull request metrics
+- **Contributor Analytics**: Visualize contributor participation, commit patterns, and engagement trends
+- **Milestone Tracking**: Monitor project progress with interactive Gantt charts and timeline views
+- **Community Insights**: Analyze community engagement, discussion patterns, and growth metrics
+- **GitHub Integration**: Seamless integration with GitHub API for real-time data synchronization
+- **AI-Powered Workflows**: Automated reporting and intelligent project recommendations
+- **Responsive Design**: Mobile-friendly interface built with Tailwind CSS and Tremor UI components
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Screenshots
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+*(Add screenshots of your dashboard here)*
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Technology Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Frontend
+- **Next.js 15.1.9** - React framework with App Router
+- **React 18.2.0** - UI library
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS 4** - Utility-first CSS framework
+- **Tremor React 3.18.7** - React components for dashboards
+- **Lucide React** - Icon library
+- **Recharts 3.5.1** - Chart library
+- **Gantt Task React** - Gantt chart component
 
-## Learn More
+### Backend & APIs
+- **GitHub REST API** - Repository and user data
+- **Octokit/rest 22.0.1** - GitHub SDK for JavaScript
+- **Slack Web API 7.13.0** - Integration for notifications
+- **date-fns 4.1.0** - Date manipulation utilities
 
-To learn more about Next.js, take a look at the following resources:
+### Development Tools
+- **ESLint** - Code linting
+- **PostCSS** - CSS processing
+- **Babel React Compiler** - React optimization
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Prerequisites
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Node.js 18+ 
+- npm, yarn, pnpm, or bun
+- GitHub Personal Access Token (for API access)
 
-## Deploy on Vercel
+## Installation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# Deployment trigger Thu Dec  4 14:43:03 PST 2025
+1. **Clone the repository**
+   ```bash
+   git clone [https://github.com/your-username/oss-pulse-dashboard.git](https://github.com/your-username/oss-pulse-dashboard.git)
+   cd oss-pulse-dashboard
