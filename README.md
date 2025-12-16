@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OSS Pulse Dashboard
+
+A comprehensive project tracking and community management dashboard for open source projects. Built with Next.js, this dashboard provides real-time insights into project health, contributor activity, milestone progress, and community engagement through GitHub API integration and AI-powered workflow automation.
 
 ## Getting Started
 

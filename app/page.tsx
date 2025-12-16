@@ -372,18 +372,6 @@ export default function Dashboard() {
           ]
         },
         {
-          id: 'welcome-4',
-          name: 'Contribution Recognition & Badging',
-          description: 'Award contribution maturity badges and recognize achievements',
-          type: 'human_approval',
-          status: 'pending',
-          approvalOptions: [
-            { id: 'approve', label: 'Award Badge', description: 'Grant recognition badge', action: 'approve' },
-            { id: 'defer', label: 'Defer Recognition', description: 'Wait for more contributions', action: 'skip' },
-            { id: 'upgrade', label: 'Upgrade Badge', description: 'Award higher level badge', action: 'modify' }
-          ]
-        },
-        {
           id: 'welcome-5',
           name: 'Weekly WG Notification',
           description: 'Add contributor to weekly working group notification digest',
@@ -441,18 +429,6 @@ export default function Dashboard() {
           type: 'automated',
           status: 'pending',
           approvalOptions: []
-        },
-        {
-          id: 'integration-4',
-          name: 'Integration Recommendations',
-          description: 'Review and approve recommended integration approach for the project',
-          type: 'human_approval',
-          status: 'pending',
-          approvalOptions: [
-            { id: 'approve', label: 'Use This Approach', description: 'Recommended integration strategy', action: 'approve' },
-            { id: 'modify', label: 'Modify Approach', description: 'Adjust integration strategy', action: 'modify' },
-            { id: 'custom', label: 'Custom Integration', description: 'Design custom approach', action: 'modify' }
-          ]
         },
         {
           id: 'integration-5',
@@ -685,9 +661,9 @@ export default function Dashboard() {
         } else {
           processedStep.status = 'completed';
           updatedWorkflow.steps[currentStepIndex] = processedStep;
+          updatedWorkflow.currentStepIndex = currentStepIndex + 1;
           setSelectedWorkflow(updatedWorkflow);
-          currentStepIndex++;
-          setTimeout(executeNextStep, 1000 / simulationSpeed);
+          setTimeout(() => executeWorkflowSteps(updatedWorkflow), 1000 / simulationSpeed);
         }
       }, 2000 / simulationSpeed);
     };
@@ -727,13 +703,6 @@ export default function Dashboard() {
           code_quality_score: 8.5,
           maintainer_reviewer: 'alice',
           review_status: 'pending'
-        };
-      case 'welcome-4':
-        return {
-          badge_awarded: 'First Contribution',
-          badge_level: 'bronze',
-          contribution_count: 1,
-          recognition_message: 'Congratulations on your first contribution!'
         };
       case 'welcome-5':
         return {
@@ -785,13 +754,6 @@ export default function Dashboard() {
           video_length: '12 minutes',
           content_topics: ['environment setup', 'first integration', 'common pitfalls'],
           personalization_score: 0.92
-        };
-      case 'integration-4':
-        return {
-          recommended_approach: 'npm package integration',
-          compatibility_score: 0.95,
-          setup_time: '30 minutes',
-          maintenance_overhead: 'low'
         };
       case 'integration-5':
         return {
@@ -1277,9 +1239,12 @@ export default function Dashboard() {
         {/* Debug Info - Hidden */}
 
         <header id="overview" className="mb-12 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            AGNTCY Directory OSS Pulse
-          </h1>
+          <div className="flex items-center justify-center mb-4">
+            <Activity className="w-12 h-12 text-blue-600 mr-3" />
+            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              AGNTCY Directory OSS Pulse
+            </h1>
+          </div>
           <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
             Real-time insights into project health, community engagement, and technical excellence
           </p>
@@ -1287,6 +1252,8 @@ export default function Dashboard() {
             data srcs: agntcy GH repos - dir, dir-spec, oasf-sdk
           </div>
         </header>
+
+        <div className="border-t border-gray-200 my-8"></div>
 
         {/* Venture KPIs Section */}
         <div className="mb-12">
@@ -1303,7 +1270,7 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Target</span>
-                  <span className="text-sm font-medium text-gray-900">v1.0 launch in Feb 2026</span>
+                  <span className="text-sm font-medium text-gray-900">v1.0 launch in Jan 2026</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
@@ -1333,7 +1300,7 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Target</span>
-                  <span className="text-sm font-medium text-gray-900">2 federation deployments by April 2036</span>
+                  <span className="text-sm font-medium text-gray-900">2 federation deployments by April 2026</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
@@ -1357,6 +1324,8 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        <div className="border-t border-gray-200 my-8"></div>
 
       {/* Community Engagement Header */}
       <div className="mb-8">
@@ -1708,6 +1677,7 @@ export default function Dashboard() {
         </div>
       </Card>
 
+      <div className="border-t border-gray-200 my-8"></div>
 
       {/* Project Roadmap */}
 
@@ -1715,7 +1685,6 @@ export default function Dashboard() {
       <div id="roadmap" className="mb-8">
         <Card>
           <h2 className="text-2xl font-bold text-black mb-4">Project Roadmap</h2>
-          <p className="text-gray-700 mb-6">Strategic vision and upcoming initiatives</p>
           
           {/* Milestone Timeline - First Subsection */}
           <div className="mb-6">
@@ -1838,6 +1807,8 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      <div className="border-t border-gray-200 my-8"></div>
+
       {/* Recent Activity */}
       <div id="milestones" className="mb-8">
         {/* Milestone Progress - Full Width */}
@@ -1913,6 +1884,8 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      <div className="border-t border-gray-200 my-8"></div>
+
       {/* Technical Steering Committee Minutes */}
       <Card id="meetings" className="mb-8">
         <h2 className="text-2xl font-bold text-black">Working Group Meeting Notes</h2>
@@ -1921,7 +1894,7 @@ export default function Dashboard() {
           {/* Meeting 1 (Latest) */}
           <div className="border border-gray-200 rounded-lg p-4">
             <div className="flex justify-between items-start mb-3">
-              <h3 className="font-semibold text-black">Working Group Meeting - Nov 21, 2025</h3>
+              <h3 className="font-semibold text-black">WG Meeting - Nov 21, 2025</h3>
               <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Discussion #715</span>
             </div>
             <div className="space-y-3">
@@ -2324,13 +2297,14 @@ export default function Dashboard() {
                           <p className="text-sm text-gray-600">{step.description}</p>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          <span className={`px-2 py-1 rounded text-xs font-medium flex items-center ${
                             step.status === 'completed' ? 'bg-green-100 text-green-800' :
                             step.status === 'running' ? 'bg-blue-100 text-blue-800' :
                             step.status === 'waiting_approval' ? 'bg-yellow-100 text-yellow-800' :
                             'bg-gray-100 text-gray-800'
                           }`}>
-                            {step.status.replace('_', ' ')}
+                            {step.status === 'completed' ? <CheckCircle2 className="w-3 h-3 mr-1" /> : null}
+                            {step.status === 'completed' ? 'Completed' : step.status.replace('_', ' ')}
                           </span>
                           {step.executionTime && (
                             <div className="flex items-center text-xs text-gray-500">
