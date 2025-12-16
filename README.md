@@ -11,7 +11,8 @@ The demo is deployed here: https://oss-pulse-dir-v2.vercel.app/
 - **Milestone Tracking**: Monitor project progress with interactive Gantt charts and timeline views
 - **Community Insights**: Analyze community engagement, discussion patterns, and growth metrics
 - **GitHub Integration**: Seamless integration with GitHub API for real-time data synchronization
-- **AI-Powered Workflows**: Automated reporting and intelligent project recommendations
+- **AI-Powered Analysis**: Automated reporting analysis and intelligent project recommendations
+- **Simulated Agentic Workflows**: Simulated agentic workflows to boost community engagement
 - **Responsive Design**: Mobile-friendly interface built with Tailwind CSS and Tremor UI components
 
 ## Screenshots
